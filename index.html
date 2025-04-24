@@ -48,6 +48,10 @@
             --court-tag-text: white;
             --general-tag-bg: var(--primary-color); /* Use Primary Purple for General Tags */
             --general-tag-text: white;
+
+            /* Sidebar Variables */
+            --sidebar-width: 80px;
+            --sidebar-width-mobile: 60px; /* Narrower on mobile */
         }
 
         * {
@@ -60,14 +64,87 @@
             font-family: 'Noto Sans TC', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
-            background-color: #f5f5f5;
+            /* background-color: #f5f5f5; /* Moved to .main-content */
             padding: 0;
             margin: 0;
+            display: flex; /* ADDED: Enable Flexbox for sidebar layout */
+            min-height: 100vh; /* Ensure body takes full height */
         }
+
+        /* --- NEW: Sidebar Styles --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes top icons up, bottom icons down */
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            position: sticky; /* Makes sidebar stick to the top */
+            top: 0;
+            height: 100vh; /* Full viewport height */
+            z-index: 100; /* Ensure it's above other elements if needed */
+        }
+
+        .sidebar-icons-top,
+        .sidebar-icons-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .sidebar-icon {
+            display: flex; /* Use flex for centering icon */
+            justify-content: center;
+            align-items: center;
+            color: #555; /* Slightly darker grey */
+            font-size: 1.6rem; /* Adjust icon size */
+            width: 60px; /* Fixed width for icon area */
+            height: 60px; /* Fixed height */
+            margin-bottom: 15px; /* Space between icons */
+            text-decoration: none;
+            border-radius: 10px; /* Rounded corners */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .sidebar-icon:last-child {
+            margin-bottom: 0; /* No margin for the last icon in a group */
+        }
+
+        .sidebar-icon i {
+             width: 24px; /* Ensure icons have a consistent width base */
+             text-align: center;
+        }
+
+        .sidebar-icon:hover {
+            background-color: #f0f0f0; /* Light grey background on hover */
+            color: var(--primary-color); /* Highlight with primary color */
+        }
+
+        /* Optional: Style for an 'active' page icon */
+        .sidebar-icon.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        /* --- END NEW: Sidebar Styles --- */
+
+
+        /* --- NEW: Main Content Area Styles --- */
+        .main-content {
+            flex-grow: 1; /* Takes remaining width */
+            overflow-y: auto; /* Allows main content to scroll */
+            background-color: #f5f5f5; /* Original body background */
+            /* padding: 20px; /* Optional: Add padding if needed, adjust as original container/header might have padding */
+        }
+        /* --- END NEW: Main Content Area Styles --- */
+
 
         .container {
             max-width: 900px;
-            margin: 20px auto;
+            margin: 20px auto; /* Keeps container centered within main-content */
             padding: 20px;
         }
 
@@ -86,6 +163,7 @@
             justify-content: flex-start; /* <-- TO THIS (Aligns items to the left) */
             gap: 15px; /* Space between logo and title */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+            /* Removed position: sticky if sidebar is sticky */
         }
 
         header img {
@@ -654,7 +732,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            z-index: 1001;
+            z-index: 1001; /* Ensure it's above sidebar */
             transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
             transform: translateX(120%);
             opacity: 0;
@@ -750,7 +828,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 2000;
+            z-index: 2000; /* Ensure modal is above everything */
             left: 0;
             top: 0;
             width: 100%;
@@ -854,13 +932,26 @@
 
         @media print {
             body {
+                display: block; /* Override flex for printing */
                 background-color: white;
             }
+
+            .sidebar {
+                display: none; /* Hide sidebar when printing */
+            }
+
+            .main-content {
+                width: 100%;
+                overflow: visible;
+                background-color: white;
+            }
+
 
             body * {
                 visibility: hidden;
             }
 
+            /* Only modal content should be visible */
             .modal,
             .modal *,
             .document-area,
@@ -881,6 +972,7 @@
                 box-shadow: none;
                 border: none;
                 animation: none;
+                z-index: auto; /* Reset z-index for print */
             }
 
             .modal-content {
@@ -939,7 +1031,7 @@
             max-width: 350px;
             max-height: 250px;
             overflow: auto;
-            z-index: 9999;
+            z-index: 9999; /* Ensure it's above everything except maybe modal */
             display: none;
             border-radius: 4px;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
@@ -975,10 +1067,36 @@
             color: #8f8;
         }
 
+        /* Style for the custom case type input */
+        #caseTypeCustom {
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
+             /* Adjust sidebar for mobile */
+            .sidebar {
+                width: var(--sidebar-width-mobile);
+                padding: 15px 0;
+            }
+
+            .sidebar-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4rem;
+                margin-bottom: 10px;
+            }
+             .sidebar-icon i {
+                width: 20px;
+             }
+
+            /* Adjust main content layout */
             header {
                 padding: 1rem; /* Adjust header padding */
                 gap: 10px; /* Adjust gap */
+                 /* Optional: Remove sticky if sidebar is sticky & causing issues */
+                position: static;
             }
             header img {
                 max-height: 35px; /* Smaller logo on mobile */
@@ -1110,356 +1228,386 @@
 
         }
 
-        /* Style for the custom case type input */
-        #caseTypeCustom {
-            margin-top: 10px;
-            display: none;
-        }
+
     </style>
 </head>
 
 <body>
-    <header>
-        <!-- IMPORTANT: Replace 'lawai-logo.svg' with the actual path to your logo file -->
-        <img src="lawai-logo.svg" alt="Lawai.io Logo">
-        <h1></h1>
-    </header>
 
-    <div class="container">
-        <div class="card">
-            <h2>案件資料填寫</h2>
-            <form id="legalDocForm">
-                <!-- Section 1: Basic Info -->
-                <div class="form-section">
-                    <h3>基本資料</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="caseType" class="required">書狀類型</label>
-                                <select id="caseType" name="caseType" required>
-                                    <option value="" disabled selected>請選擇書狀類型</option>
-                                    <option value="起訴狀">起訴狀</option>
-                                    <option value="答辯狀">答辯狀</option>
-                                    <option value="準備書狀">準備書狀</option>
-                                    <option value="答辯理由狀">答辯理由狀</option>
-                                    <option value="補充答辯狀">補充答辯狀</option>
-                                    <option value="爭點整理書狀">爭點整理書狀</option>
-                                    <option value="陳報狀">陳報狀</option>
-                                    <option value="陳述意見狀">陳述意見狀</option>
-                                    <option value="調查證據聲請狀">調查證據聲請狀</option>
-                                    <option value="辯論意旨狀">辯論意旨狀</option>
-                                    <option value="反訴狀">反訴狀</option>
-                                    <option value="上訴理由狀">上訴理由狀</option>
-                                    <option value="聲明上訴狀">聲明上訴狀</option>
-                                    <option value="custom">自行輸入...</option>
-                                </select>
-                                <input type="text" id="caseTypeCustom" name="caseTypeCustom" placeholder="請輸入自訂書狀類型"
-                                    style="display: none; margin-top: 10px;">
-                                <div class="error-message" id="caseType-error">請選擇或輸入書狀類型</div>
-                                <div class="error-message" id="caseTypeCustom-error">請輸入自訂書狀類型</div>
+    <!-- NEW: Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-icons-top">
+            <!-- TODO: Update href or add onclick handlers -->
+            <a href="#profile" class="sidebar-icon" title="會員中心">
+                <i class="fas fa-user-circle"></i>
+            </a>
+            <a href="#home" class="sidebar-icon active" title="首頁"> <!-- Example: Add 'active' class for current page -->
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="#workspace" class="sidebar-icon" title="工作區">
+                <i class="fas fa-briefcase"></i>
+            </a>
+            <a href="#generate" class="sidebar-icon" title="生成文件區">
+                <i class="fas fa-file-alt"></i>
+            </a>
+            <a href="#upload" class="sidebar-icon" title="上傳文件區">
+                <i class="fas fa-upload"></i>
+            </a>
+        </div>
+        <div class="sidebar-icons-bottom">
+            <a href="#settings" class="sidebar-icon" title="設置">
+                <i class="fas fa-cog"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- NEW: Main Content Wrapper -->
+    <div class="main-content">
+
+        <header>
+            <!-- IMPORTANT: Replace 'lawai-logo.svg' with the actual path to your logo file -->
+            <img src="lawai-logo.svg" alt="Lawai.io Logo">
+            <h1>案件資料填寫</h1> <!-- Adjusted title slightly -->
+        </header>
+
+        <div class="container">
+            <div class="card">
+                <h2>案件資料填寫</h2> <!-- Kept this inner title for clarity -->
+                <form id="legalDocForm">
+                    <!-- Section 1: Basic Info -->
+                    <div class="form-section">
+                        <h3>基本資料</h3>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="caseType" class="required">書狀類型</label>
+                                    <select id="caseType" name="caseType" required>
+                                        <option value="" disabled selected>請選擇書狀類型</option>
+                                        <option value="起訴狀">起訴狀</option>
+                                        <option value="答辯狀">答辯狀</option>
+                                        <option value="準備書狀">準備書狀</option>
+                                        <option value="答辯理由狀">答辯理由狀</option>
+                                        <option value="補充答辯狀">補充答辯狀</option>
+                                        <option value="爭點整理書狀">爭點整理書狀</option>
+                                        <option value="陳報狀">陳報狀</option>
+                                        <option value="陳述意見狀">陳述意見狀</option>
+                                        <option value="調查證據聲請狀">調查證據聲請狀</option>
+                                        <option value="辯論意旨狀">辯論意旨狀</option>
+                                        <option value="反訴狀">反訴狀</option>
+                                        <option value="上訴理由狀">上訴理由狀</option>
+                                        <option value="聲明上訴狀">聲明上訴狀</option>
+                                        <option value="custom">自行輸入...</option>
+                                    </select>
+                                    <input type="text" id="caseTypeCustom" name="caseTypeCustom" placeholder="請輸入自訂書狀類型"
+                                        style="display: none; margin-top: 10px;">
+                                    <div class="error-message" id="caseType-error">請選擇或輸入書狀類型</div>
+                                    <div class="error-message" id="caseTypeCustom-error">請輸入自訂書狀類型</div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="caseNumber">案號 (選填)</label>
+                                    <input type="text" id="caseNumber" name="caseNumber" placeholder="例：113年度訴字第1234號">
+                                    <span class="helper-text">若為新案件或未知案號可不填</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="caseNumber">案號 (選填)</label>
-                                <input type="text" id="caseNumber" name="caseNumber" placeholder="例：113年度訴字第1234號">
-                                <span class="helper-text">若為新案件或未知案號可不填</span>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="courtName" class="required">法院名稱</label>
+                                    <select id="courtName" name="courtName" required>
+                                        <option value="" disabled selected>請選擇法院</option>
+                                        <option value="憲法法庭">憲法法庭</option>
+                                        <option value="司法院刑事補償法庭">司法院刑事補償法庭</option>
+                                        <option value="司法院--訴願決定">司法院--訴願決定</option>
+                                        <option value="最高法院">最高法院</option>
+                                        <option value="最高行政法院">最高行政法院</option>
+                                        <option value="懲戒法院懲戒法庭">懲戒法院懲戒法庭</option>
+                                        <option value="懲戒法院職務法庭">懲戒法院職務法庭</option>
+                                        <option value="臺灣高等法院">臺灣高等法院</option>
+                                        <option value="臺灣高等法院--訴願決定">臺灣高等法院--訴願決定</option>
+                                        <option value="臺北高等行政法院">臺北高等行政法院</option>
+                                        <option value="臺北高等行政法院 地方庭">臺北高等行政法院 地方庭</option>
+                                        <option value="臺中高等行政法院">臺中高等行政法院</option>
+                                        <option value="臺中高等行政法院 地方庭">臺中高等行政法院 地方庭</option>
+                                        <option value="高雄高等行政法院">高雄高等行政法院</option>
+                                        <option value="高雄高等行政法院 地方庭">高雄高等行政法院 地方庭</option>
+                                        <option value="智慧財產及商業法院">智慧財產及商業法院</option>
+                                        <option value="臺灣高等法院 臺中分院">臺灣高等法院 臺中分院</option>
+                                        <option value="臺灣高等法院 臺南分院">臺灣高等法院 臺南分院</option>
+                                        <option value="臺灣高等法院 高雄分院">臺灣高等法院 高雄分院</option>
+                                        <option value="臺灣高等法院 花蓮分院">臺灣高等法院 花蓮分院</option>
+                                        <option value="臺灣臺北地方法院">臺灣臺北地方法院</option>
+                                        <option value="臺灣士林地方法院">臺灣士林地方法院</option>
+                                        <option value="臺灣新北地方法院">臺灣新北地方法院</option>
+                                        <option value="臺灣宜蘭地方法院">臺灣宜蘭地方法院</option>
+                                        <option value="臺灣基隆地方法院">臺灣基隆地方法院</option>
+                                        <option value="臺灣桃園地方法院">臺灣桃園地方法院</option>
+                                        <option value="臺灣新竹地方法院">臺灣新竹地方法院</option>
+                                        <option value="臺灣苗栗地方法院">臺灣苗栗地方法院</option>
+                                        <option value="臺灣臺中地方法院">臺灣臺中地方法院</option>
+                                        <option value="臺灣彰化地方法院">臺灣彰化地方法院</option>
+                                        <option value="臺灣南投地方法院">臺灣南投地方法院</option>
+                                        <option value="臺灣雲林地方法院">臺灣雲林地方法院</option>
+                                        <option value="臺灣嘉義地方法院">臺灣嘉義地方法院</option>
+                                        <option value="臺灣臺南地方法院">臺灣臺南地方法院</option>
+                                        <option value="臺灣高雄地方法院">臺灣高雄地方法院</option>
+                                        <option value="臺灣橋頭地方法院">臺灣橋頭地方法院</option>
+                                        <option value="臺灣花蓮地方法院">臺灣花蓮地方法院</option>
+                                        <option value="臺灣臺東地方法院">臺灣臺東地方法院</option>
+                                        <option value="臺灣屏東地方法院">臺灣屏東地方法院</option>
+                                        <option value="臺灣澎湖地方法院">臺灣澎湖地方法院</option>
+                                        <option value="福建高等法院金門分院">福建高等法院金門分院</option>
+                                        <option value="福建金門地方法院">福建金門地方法院</option>
+                                        <option value="福建連江地方法院">福建連江地方法院</option>
+                                        <option value="臺灣高雄少年及家事法院">臺灣高雄少年及家事法院</option>
+                                        <option value="其他法院">其他法院 (請於書狀內容確認)</option>
+                                    </select>
+                                    <div class="error-message" id="courtName-error">請選擇法院名稱</div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="branchName">股別 (選填)</label>
+                                    <input type="text" id="branchName" name="branchName" placeholder="例：民事庭 甲股">
+                                    <span class="helper-text">若不確定可不填</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="courtName" class="required">法院名稱</label>
-                                <select id="courtName" name="courtName" required>
-                                    <option value="" disabled selected>請選擇法院</option>
-                                    <option value="憲法法庭">憲法法庭</option>
-                                    <option value="司法院刑事補償法庭">司法院刑事補償法庭</option>
-                                    <option value="司法院--訴願決定">司法院--訴願決定</option>
-                                    <option value="最高法院">最高法院</option>
-                                    <option value="最高行政法院">最高行政法院</option>
-                                    <option value="懲戒法院懲戒法庭">懲戒法院懲戒法庭</option>
-                                    <option value="懲戒法院職務法庭">懲戒法院職務法庭</option>
-                                    <option value="臺灣高等法院">臺灣高等法院</option>
-                                    <option value="臺灣高等法院--訴願決定">臺灣高等法院--訴願決定</option>
-                                    <option value="臺北高等行政法院">臺北高等行政法院</option>
-                                    <option value="臺北高等行政法院 地方庭">臺北高等行政法院 地方庭</option>
-                                    <option value="臺中高等行政法院">臺中高等行政法院</option>
-                                    <option value="臺中高等行政法院 地方庭">臺中高等行政法院 地方庭</option>
-                                    <option value="高雄高等行政法院">高雄高等行政法院</option>
-                                    <option value="高雄高等行政法院 地方庭">高雄高等行政法院 地方庭</option>
-                                    <option value="智慧財產及商業法院">智慧財產及商業法院</option>
-                                    <option value="臺灣高等法院 臺中分院">臺灣高等法院 臺中分院</option>
-                                    <option value="臺灣高等法院 臺南分院">臺灣高等法院 臺南分院</option>
-                                    <option value="臺灣高等法院 高雄分院">臺灣高等法院 高雄分院</option>
-                                    <option value="臺灣高等法院 花蓮分院">臺灣高等法院 花蓮分院</option>
-                                    <option value="臺灣臺北地方法院">臺灣臺北地方法院</option>
-                                    <option value="臺灣士林地方法院">臺灣士林地方法院</option>
-                                    <option value="臺灣新北地方法院">臺灣新北地方法院</option>
-                                    <option value="臺灣宜蘭地方法院">臺灣宜蘭地方法院</option>
-                                    <option value="臺灣基隆地方法院">臺灣基隆地方法院</option>
-                                    <option value="臺灣桃園地方法院">臺灣桃園地方法院</option>
-                                    <option value="臺灣新竹地方法院">臺灣新竹地方法院</option>
-                                    <option value="臺灣苗栗地方法院">臺灣苗栗地方法院</option>
-                                    <option value="臺灣臺中地方法院">臺灣臺中地方法院</option>
-                                    <option value="臺灣彰化地方法院">臺灣彰化地方法院</option>
-                                    <option value="臺灣南投地方法院">臺灣南投地方法院</option>
-                                    <option value="臺灣雲林地方法院">臺灣雲林地方法院</option>
-                                    <option value="臺灣嘉義地方法院">臺灣嘉義地方法院</option>
-                                    <option value="臺灣臺南地方法院">臺灣臺南地方法院</option>
-                                    <option value="臺灣高雄地方法院">臺灣高雄地方法院</option>
-                                    <option value="臺灣橋頭地方法院">臺灣橋頭地方法院</option>
-                                    <option value="臺灣花蓮地方法院">臺灣花蓮地方法院</option>
-                                    <option value="臺灣臺東地方法院">臺灣臺東地方法院</option>
-                                    <option value="臺灣屏東地方法院">臺灣屏東地方法院</option>
-                                    <option value="臺灣澎湖地方法院">臺灣澎湖地方法院</option>
-                                    <option value="福建高等法院金門分院">福建高等法院金門分院</option>
-                                    <option value="福建金門地方法院">福建金門地方法院</option>
-                                    <option value="福建連江地方法院">福建連江地方法院</option>
-                                    <option value="臺灣高雄少年及家事法院">臺灣高雄少年及家事法院</option>
-                                    <option value="其他法院">其他法院 (請於書狀內容確認)</option>
-                                </select>
-                                <div class="error-message" id="courtName-error">請選擇法院名稱</div>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="branchName">股別 (選填)</label>
-                                <input type="text" id="branchName" name="branchName" placeholder="例：民事庭 甲股">
-                                <span class="helper-text">若不確定可不填</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Section 2: Parties -->
-                <div class="form-section">
-                    <h3>當事人資料</h3>
-                    <div class="form-group">
-                        <label for="plaintiff" class="required">原告資料
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請填寫原告完整姓名、地址。若有多位原告，請換行分隔。法定代理人亦請註明。</span></span>
-                        </label>
-                        <textarea id="plaintiff" name="plaintiff" placeholder="例：
+                    <!-- Section 2: Parties -->
+                    <div class="form-section">
+                        <h3>當事人資料</h3>
+                        <div class="form-group">
+                            <label for="plaintiff" class="required">原告資料
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請填寫原告完整姓名、地址。若有多位原告，請換行分隔。法定代理人亦請註明。</span></span>
+                            </label>
+                            <textarea id="plaintiff" name="plaintiff" placeholder="例：
 原告 林大明
 住址：臺北市信義區市府路1號" required></textarea>
-                        <div class="error-message" id="plaintiff-error">請填寫原告資料</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="plaintiffRepresentative">原告訴訟代理人 (選填)</label>
-                        <textarea id="plaintiffRepresentative" name="plaintiffRepresentative" placeholder="例：
+                            <div class="error-message" id="plaintiff-error">請填寫原告資料</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="plaintiffRepresentative">原告訴訟代理人 (選填)</label>
+                            <textarea id="plaintiffRepresentative" name="plaintiffRepresentative" placeholder="例：
 訴訟代理人 王大明律師
 設址：臺北市中正區重慶南路一段122號"></textarea>
-                        <span class="helper-text">若有委任律師請填寫</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="defendant" class="required">被告資料
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請填寫被告完整姓名、地址。若有多位被告，請換行分隔。</span></span>
-                        </label>
-                        <textarea id="defendant" name="defendant" placeholder="例：
+                            <span class="helper-text">若有委任律師請填寫</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="defendant" class="required">被告資料
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請填寫被告完整姓名、地址。若有多位被告，請換行分隔。</span></span>
+                            </label>
+                            <textarea id="defendant" name="defendant" placeholder="例：
 被告 王小華
 住址：新北市板橋區縣民大道二段7號" required></textarea>
-                        <div class="error-message" id="defendant-error">請填寫被告資料</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="defendantRepresentative">被告訴訟代理人 (選填)</label>
-                        <textarea id="defendantRepresentative" name="defendantRepresentative" placeholder="例：
+                            <div class="error-message" id="defendant-error">請填寫被告資料</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="defendantRepresentative">被告訴訟代理人 (選填)</label>
+                            <textarea id="defendantRepresentative" name="defendantRepresentative" placeholder="例：
 訴訟代理人 陳小美律師
 設址：臺中市西區自由路一段91號"></textarea>
-                    </div>
-                </div>
-
-                <!-- Section 3: Case Details -->
-                <div class="form-section">
-                    <h3>案件內容</h3>
-                    <div class="form-group">
-                        <label for="caseTitle" class="required">案件案由</label>
-                        <input type="text" id="caseTitle" name="caseTitle" placeholder="例：請求返還借款、請求給付貨款、確認所有權存在等"
-                            required>
-                        <div class="error-message" id="caseTitle-error">請填寫案件案由</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="caseProcess">案件詳細經過 (選填)
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">若需 AI
-                                    協助統整案情摘要或事實，請在此詳細描述案件的完整過程、時間、地點、人物、對話、事件等細節。點選下方按鈕觸發 AI。</span></span>
-                        </label>
-                        <textarea id="caseProcess" name="caseProcess" rows="6"
-                            placeholder="請詳細描述案件從發生到現在的完整經過..."></textarea>
-                        <div id="aiSummarizeButtonContainer">
-                            <!-- AI Summarize button will be dynamically added here by JS -->
                         </div>
-                        <div class="error-message" id="caseProcess-error"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="requests" class="required">訴之聲明 (請求事項)
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請條列您希望法院判決的具體內容，應明確、可執行。例如：被告應給付原告...元、確認...契約無效等。利息計算方式也請寫明。</span></span>
-                        </label>
-                        <textarea id="requests" name="requests" rows="5" placeholder="例：
+
+                    <!-- Section 3: Case Details -->
+                    <div class="form-section">
+                        <h3>案件內容</h3>
+                        <div class="form-group">
+                            <label for="caseTitle" class="required">案件案由</label>
+                            <input type="text" id="caseTitle" name="caseTitle" placeholder="例：請求返還借款、請求給付貨款、確認所有權存在等"
+                                required>
+                            <div class="error-message" id="caseTitle-error">請填寫案件案由</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="caseProcess">案件詳細經過 (選填)
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">若需 AI
+                                        協助統整案情摘要或事實，請在此詳細描述案件的完整過程、時間、地點、人物、對話、事件等細節。點選下方按鈕觸發 AI。</span></span>
+                            </label>
+                            <textarea id="caseProcess" name="caseProcess" rows="6"
+                                placeholder="請詳細描述案件從發生到現在的完整經過..."></textarea>
+                            <div id="aiSummarizeButtonContainer">
+                                <!-- AI Summarize button will be dynamically added here by JS -->
+                            </div>
+                            <div class="error-message" id="caseProcess-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="requests" class="required">訴之聲明 (請求事項)
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請條列您希望法院判決的具體內容，應明確、可執行。例如：被告應給付原告...元、確認...契約無效等。利息計算方式也請寫明。</span></span>
+                            </label>
+                            <textarea id="requests" name="requests" rows="5" placeholder="例：
 一、被告應給付原告新台幣○○萬元整。
 二、及自起書狀繕本送達翌日起至清償日止，按週年利率百分之五計算之利息。
 三、訴訟費用由被告負擔。
 （若為起訴，可加：四、原告願供擔保，請准宣告假執行。）" required></textarea>
-                        <div class="error-message" id="requests-error">請填寫訴之聲明 (請求事項)</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="facts" class="required">事實及理由
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請依時間順序，分點敘述支持您訴之聲明的客觀事實與法律理由。每點應簡潔明瞭，至少需包含3個關鍵事實點。可引用證據（如：詳參原證1）。</span></span>
-                        </label>
-                        <textarea id="facts" name="facts" rows="8" placeholder="例：
+                            <div class="error-message" id="requests-error">請填寫訴之聲明 (請求事項)</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="facts" class="required">事實及理由
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請依時間順序，分點敘述支持您訴之聲明的客觀事實與法律理由。每點應簡潔明瞭，至少需包含3個關鍵事實點。可引用證據（如：詳參原證1）。</span></span>
+                            </label>
+                            <textarea id="facts" name="facts" rows="8" placeholder="例：
 一、原告於民國113年○月○日借款新台幣○○萬元予被告，約定清償日為113年○月○日（詳參原證1：借據影本）。
 二、詎被告屆期竟未清償，經原告於113年○月○日以存證信函催告（詳參原證2：存證信函影本），被告仍置之不理。
 三、依民法第478條規定，被告自應負返還借款之責。..." required></textarea>
-                        <div class="error-message" id="facts-error">請填寫事實及理由，至少3點</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="evidence" class="required">證據名稱及件數
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請條列您提出的所有證據文件名稱及其件數。例如：原證1：借據影本乙份。若為被告，則用「被證」。</span></span>
-                        </label>
-                        <textarea id="evidence" name="evidence" rows="4" placeholder="例：
+                            <div class="error-message" id="facts-error">請填寫事實及理由，至少3點</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="evidence" class="required">證據名稱及件數
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請條列您提出的所有證據文件名稱及其件數。例如：原證1：借據影本乙份。若為被告，則用「被證」。</span></span>
+                            </label>
+                            <textarea id="evidence" name="evidence" rows="4" placeholder="例：
 原證1：借據影本乙份
 原證2：存證信函暨回執影本乙份
 原證3：匯款紀錄截圖乙張
 ..." required></textarea>
-                        <div class="error-message" id="evidence-error">請填寫證據名稱及件數</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="laws">適用法條 (選填)
-                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                    class="tooltip-text">請列出您認為適用的主要法條，每條一行。AI 搜尋結果將會填入此處。</span></span>
-                        </label>
-                        <textarea id="laws" name="laws" rows="3" placeholder="例：
+                            <div class="error-message" id="evidence-error">請填寫證據名稱及件數</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="laws">適用法條 (選填)
+                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                        class="tooltip-text">請列出您認為適用的主要法條，每條一行。AI 搜尋結果將會填入此處。</span></span>
+                            </label>
+                            <textarea id="laws" name="laws" rows="3" placeholder="例：
 民法第474條
 民法第478條
 民法第229條第1項
 民事訴訟法第78條"></textarea>
-                        <span class="helper-text">可不填，由 AI 統整或生成書狀時判斷，AI 搜尋結果亦會填入此處</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="precedents">相關判決 (選填)</label>
-                        <textarea id="precedents" name="precedents" rows="3" placeholder="例：
+                            <span class="helper-text">可不填，由 AI 統整或生成書狀時判斷，AI 搜尋結果亦會填入此處</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="precedents">相關判決 (選填)</label>
+                            <textarea id="precedents" name="precedents" rows="3" placeholder="例：
 最高法院○○年度台上字第○○號判決意旨參照
 （點選下方 AI 搜尋可查找相關判決，並手動加入）"></textarea>
-                        <span class="helper-text">若有引用特定判決可填寫，或使用 AI 搜尋後加入。</span>
+                            <span class="helper-text">若有引用特定判決可填寫，或使用 AI 搜尋後加入。</span>
 
-                        <!-- === Combined AI Search Input Area === -->
-                        <div id="aiSearchInputArea" class="ai-search-input-area">
-                            <!-- === Court Keywords Section === -->
-                            <div class="ai-court-keywords-section">
-                                <label for="courtSelect">法院關鍵字篩選 (可多選，若無選擇預設為所有法院):</label>
-                                <select id="courtSelect" name="courtSelect">
-                                    <option value="" disabled selected>-- 請選擇法院加入篩選 --</option>
-                                    <!-- Options will be dynamically populated by JS -->
-                                </select>
-                                <div class="court-keyword-list" id="courtKeywordList">
-                                    <!-- Selected court tags will be inserted here -->
+                            <!-- === Combined AI Search Input Area === -->
+                            <div id="aiSearchInputArea" class="ai-search-input-area">
+                                <!-- === Court Keywords Section === -->
+                                <div class="ai-court-keywords-section">
+                                    <label for="courtSelect">法院關鍵字篩選 (可多選，若無選擇預設為所有法院):</label>
+                                    <select id="courtSelect" name="courtSelect">
+                                        <option value="" disabled selected>-- 請選擇法院加入篩選 --</option>
+                                        <!-- Options will be dynamically populated by JS -->
+                                    </select>
+                                    <div class="court-keyword-list" id="courtKeywordList">
+                                        <!-- Selected court tags will be inserted here -->
+                                    </div>
+                                </div>
+                                <!-- === General Keywords Section === -->
+                                <div class="ai-general-keywords-section">
+                                    <p>一般搜尋關鍵字 (可增刪):</p>
+                                    <div class="keyword-list" id="keywordList">
+                                        <!-- General keyword tags will be inserted here -->
+                                    </div>
+                                    <div class="add-keyword-section">
+                                        <input type="text" id="addKeywordInput" placeholder="新增一般關鍵字...">
+                                        <button type="button" id="addKeywordBtn" class="btn btn-secondary"><i
+                                                class="fas fa-plus"></i> 新增</button>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- === General Keywords Section === -->
-                            <div class="ai-general-keywords-section">
-                                <p>一般搜尋關鍵字 (可增刪):</p>
-                                <div class="keyword-list" id="keywordList">
-                                    <!-- General keyword tags will be inserted here -->
+                            <!-- === END Combined AI Search Input Area === -->
+
+                            <!-- === Container for AI Search Button === -->
+                            <div id="aiSearchButtonContainer"></div>
+                            <!-- === END Container === -->
+
+                            <!-- === Container for AI Search Results === -->
+                            <div id="searchResultsListContainer" class="search-results-list-container">
+                                <!-- NEW: Filter container added here -->
+                                <div id="resultsFilterContainer" class="results-filter-container" style="display: none;">
+                                    <label for="resultsCourtFilterSelect">依法院篩選結果：</label>
+                                    <select id="resultsCourtFilterSelect" name="resultsCourtFilterSelect">
+                                        <!-- Filter options will be populated here -->
+                                    </select>
                                 </div>
-                                <div class="add-keyword-section">
-                                    <input type="text" id="addKeywordInput" placeholder="新增一般關鍵字...">
-                                    <button type="button" id="addKeywordBtn" class="btn btn-secondary"><i
-                                            class="fas fa-plus"></i> 新增</button>
+                                <!-- This div will hold the actual result items -->
+                                <div id="searchResultsItems" class="search-results-list">
+                                    <!-- Search results (link + add button) will be dynamically added here -->
                                 </div>
                             </div>
-                        </div>
-                        <!-- === END Combined AI Search Input Area === -->
+                            <!-- === END Search Results Container === -->
 
-                        <!-- === Container for AI Search Button === -->
-                        <div id="aiSearchButtonContainer"></div>
-                        <!-- === END Container === -->
-
-                        <!-- === Container for AI Search Results === -->
-                        <div id="searchResultsListContainer" class="search-results-list-container">
-                            <!-- NEW: Filter container added here -->
-                            <div id="resultsFilterContainer" class="results-filter-container" style="display: none;">
-                                <label for="resultsCourtFilterSelect">依法院篩選結果：</label>
-                                <select id="resultsCourtFilterSelect" name="resultsCourtFilterSelect">
-                                    <!-- Filter options will be populated here -->
-                                </select>
-                            </div>
-                            <!-- This div will hold the actual result items -->
-                            <div id="searchResultsItems" class="search-results-list">
-                                <!-- Search results (link + add button) will be dynamically added here -->
-                            </div>
-                        </div>
-                        <!-- === END Search Results Container === -->
-
-                    </div>
-                </div>
-
-                <!-- Section 4: Contact Info -->
-                <div class="form-section">
-                    <h3>聯絡資訊 (供系統通知使用)</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="email">電子郵件 (選填)</label>
-                                <input type="email" id="email" name="email" placeholder="請輸入常用有效的電子郵件信箱">
-                                <div class="error-message" id="email-error">請填寫有效的電子郵件格式</div>
-                                <span class="helper-text">若填寫，可用於接收生成結果通知或文件</span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="phone">聯絡電話 (選填)</label>
-                                <input type="text" id="phone" name="phone" placeholder="例：0912-345678">
-                                <span class="helper-text">非必填</span>
-                            </div>
                         </div>
                     </div>
+
+                    <!-- Section 4: Contact Info -->
+                    <div class="form-section">
+                        <h3>聯絡資訊 (供系統通知使用)</h3>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="email">電子郵件 (選填)</label>
+                                    <input type="email" id="email" name="email" placeholder="請輸入常用有效的電子郵件信箱">
+                                    <div class="error-message" id="email-error">請填寫有效的電子郵件格式</div>
+                                    <span class="helper-text">若填寫，可用於接收生成結果通知或文件</span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="phone">聯絡電話 (選填)</label>
+                                    <input type="text" id="phone" name="phone" placeholder="例：0912-345678">
+                                    <span class="helper-text">非必填</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons Container -->
+                    <div class="buttons-container" id="buttonsContainer"></div>
+                </form>
+            </div> <!-- End Card -->
+        </div> <!-- End Container -->
+
+
+        <footer>
+            <p>© 2025 lawai.io | 本系統及生成內容僅供學術研究與模擬參考</p>
+            <p><small><strong>重要提醒：</strong>使用本系統生成的任何文件均不構成法律意見，請務必諮詢專業律師並由其審閱修改後再行使用。</small></p>
+            <p><small>Debug Version: <span id="debugVersion"></span> (Press Alt+D for debug panel)</small></p>
+        </footer>
+
+        <!-- Modal for Displaying Generated Document -->
+        <div id="documentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>生成的書狀預覽</h2> <span class="close" title="關閉">×</span>
                 </div>
-
-                <!-- Buttons Container -->
-                <div class="buttons-container" id="buttonsContainer"></div>
-            </form>
-        </div> <!-- End Card -->
-    </div> <!-- End Container -->
-
-    <!-- Modal for Displaying Generated Document -->
-    <div id="documentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>生成的書狀預覽</h2> <span class="close" title="關閉">×</span>
-            </div>
-            <div class="document-area" id="documentContent" aria-live="polite"></div>
-            <div class="document-buttons">
-                <button id="copyBtn" class="secondary-btn btn-uniform" title="複製書狀內容至剪貼簿"><i class="fas fa-copy"></i>
-                    複製內容</button>
-                <button id="printBtn" class="secondary-btn btn-uniform" title="列印書狀"><i class="fas fa-print"></i>
-                    列印</button>
-                <button id="downloadBtn" class="secondary-btn btn-uniform" title="下載為 .txt 文字檔"><i
-                        class="fas fa-download"></i> 下載 (.txt)</button>
-                <button id="emailBtn" class="secondary-btn btn-uniform" title="將書狀內容(模擬)寄送至您填寫的信箱"><i
-                        class="fas fa-envelope"></i> 寄送Email</button>
+                <div class="document-area" id="documentContent" aria-live="polite"></div>
+                <div class="document-buttons">
+                    <button id="copyBtn" class="secondary-btn btn-uniform" title="複製書狀內容至剪貼簿"><i class="fas fa-copy"></i>
+                        複製內容</button>
+                    <button id="printBtn" class="secondary-btn btn-uniform" title="列印書狀"><i class="fas fa-print"></i>
+                        列印</button>
+                    <button id="downloadBtn" class="secondary-btn btn-uniform" title="下載為 .txt 文字檔"><i
+                            class="fas fa-download"></i> 下載 (.txt)</button>
+                    <button id="emailBtn" class="secondary-btn btn-uniform" title="將書狀內容(模擬)寄送至您填寫的信箱"><i
+                            class="fas fa-envelope"></i> 寄送Email</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <p>正在處理中，請稍候...</p>
-        <p id="estimatedTime"></p>
-    </div>
-    <!-- Notification Area -->
-    <div class="notification" id="notification"></div>
-    <!-- Debug Panel -->
-    <div class="debug-panel" id="debugPanel"></div>
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>正在處理中，請稍候...</p>
+            <p id="estimatedTime"></p>
+        </div>
+        <!-- Notification Area -->
+        <div class="notification" id="notification"></div>
+        <!-- Debug Panel -->
+        <div class="debug-panel" id="debugPanel"></div>
 
-    <footer>
-        <p>© 2025 lawai.io | 本系統及生成內容僅供學術研究與模擬參考</p>
-        <p><small><strong>重要提醒：</strong>使用本系統生成的任何文件均不構成法律意見，請務必諮詢專業律師並由其審閱修改後再行使用。</small></p>
-        <p><small>Debug Version: <span id="debugVersion"></span> (Press Alt+D for debug panel)</small></p>
-    </footer>
+    </div> <!-- End Main Content Wrapper -->
 
     <script>
         // --- JAVASCRIPT REMAINS THE SAME ---
@@ -2116,7 +2264,7 @@
             window.addEventListener('click', (event) => { if (event.target === modal) { modal.style.display = 'none'; } });
             window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.style.display === 'block') { modal.style.display = 'none'; } });
             if (copyBtn) { copyBtn.addEventListener('click', () => { const textToCopy = documentContent.textContent; if (!textToCopy) { showNotification('沒有內容可複製', 'warning'); return; } navigator.clipboard.writeText(textToCopy).then(() => { showNotification('書狀內容已複製到剪貼簿', 'success'); log('內容已複製', 'action'); }).catch(err => { showNotification('複製失敗，瀏覽器可能不支援或未授權', 'error'); log(`複製失敗: ${err.message}`, 'error'); }); }); }
-            if (printBtn) { printBtn.addEventListener('click', () => { log('觸發列印', 'action'); modal.classList.add('printing'); window.print(); setTimeout(() => modal.classList.remove('printing'), 500); }); }
+            if (printBtn) { printBtn.addEventListener('click', () => { log('觸發列印', 'action'); window.print(); }); } // Simplified print call
             if (downloadBtn) { downloadBtn.addEventListener('click', () => { try { const text = documentContent.textContent; if (!text) { showNotification('沒有內容可下載', 'warning'); return; } const caseType = getCaseTypeValue() || '書狀'; const today = new Date().toISOString().slice(0, 10); const filename = `${caseType}_${today}.txt`; const blob = new Blob([text], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); showNotification(`已下載文件：${filename}`, 'success'); log(`書狀已下載為 ${filename}`, 'action'); } catch (e) { log(`下載失敗: ${e.message}`, 'error'); showNotification('下載文件時發生錯誤', 'error'); } }); }
             if (emailBtn) { emailBtn.addEventListener('click', () => { const userEmail = document.getElementById('email').value; const docText = documentContent.textContent; if (!userEmail || !validateEmail(userEmail)) { showNotification('請先在主表單填寫有效的電子郵件地址才能寄送', 'warning'); showError('email', '若要寄送，請填寫有效的電子郵件'); return; } if (!docText) { showNotification('沒有訴狀內容可寄送', 'warning'); return; } log(`準備模擬發送郵件至 ${userEmail}`, 'action'); showNotification(`即將模擬發送書狀至：${userEmail}`, 'info'); emailBtn.disabled = true; emailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 寄送中...'; setTimeout(() => { emailBtn.disabled = false; emailBtn.innerHTML = '<i class="fas fa-envelope"></i> 寄送Email'; showNotification(`書狀已「模擬」發送至您的信箱：${userEmail}`, 'success'); log(`模擬郵件已發送至 ${userEmail}`, 'action'); }, 2500); }); }
 
