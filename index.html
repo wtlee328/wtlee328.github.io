@@ -1,46 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>律師訴狀生成系統</title>
+    <title>民事訴訟書狀生成系統</title>
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        // 全局錯誤處理函數
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("全局錯誤:", message, "來源:", source, "行:", lineno);
-            alert("系統發生錯誤: " + message);
-            return true;
+        // Global Error Handler
+        window.onerror = function (message, source, lineno, colno, error) {
+            console.error("Global Error:", message, "Source:", source, "Line:", lineno);
+            alert("System Error: " + message);
+            return true; // Prevents the default browser error handler
         };
-        
-        // 調試工具
+
+        // Debug Info Object
         window.debugInfo = {
             logRequests: true,
             logResponses: true,
-            version: "wtlee328-debug-2025-04-10",
+            version: "wtlee328-debug-2025-04-22-results-filter-v2", // Updated version
             user: "wtlee328",
-            timestamp: "2025-04-10 17:24:38"
+            timestamp: new Date().toISOString()
         };
     </script>
-    <!-- CSS 樣式保持不變 -->
     <style>
+        /* --- Base Styles --- */
         :root {
             --primary-color: #1a3b68;
             --secondary-color: #f8f9fa;
             --accent-color: #d4a760;
+            /* Gold */
             --text-color: #333;
             --border-color: #ddd;
             --success-color: #28a745;
             --error-color: #dc3545;
             --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            /* Info blue */
+            --added-color: #6c757d;
+            /* Color for 'added' button */
+            --court-tag-bg: var(--info-color);
+            /* Specific color for court tags */
+            --court-tag-text: white;
+            --general-tag-bg: var(--primary-color);
+            /* Color for general tags */
+            --general-tag-text: white;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: 'Noto Sans TC', Arial, sans-serif;
             line-height: 1.6;
@@ -49,63 +62,66 @@
             padding: 0;
             margin: 0;
         }
-        
+
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
         }
-        
+
         header {
             background-color: var(--primary-color);
             color: white;
             padding: 1rem;
             text-align: center;
             margin-bottom: 2rem;
+            border-radius: 8px 8px 0 0;
         }
-        
+
         header h1 {
             margin: 0;
             font-size: 1.8rem;
         }
-        
-        .subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
-        
+
         .card {
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             padding: 2rem;
             margin-bottom: 2rem;
         }
-        
+
         h2 {
             color: var(--primary-color);
             margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--accent-color);
+            font-weight: 600;
         }
-        
+
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
+
         label {
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--primary-color);
+            font-size: 0.95rem;
         }
-        
+
         .required:after {
             content: " *";
             color: var(--error-color);
         }
-        
+
         input[type="text"],
         input[type="email"],
         select,
@@ -115,222 +131,636 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
         }
-        
+
         input:focus,
         select:focus,
         textarea:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(212, 167, 96, 0.2);
+            box-shadow: 0 0 0 3px rgba(212, 167, 96, 0.25);
         }
-        
+
         textarea {
             min-height: 120px;
             resize: vertical;
         }
-        
+
         .form-section {
             background-color: var(--secondary-color);
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
         }
-        
-        .form-section h3 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-        
+
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .form-col {
             flex: 1;
             min-width: 200px;
         }
-        
-        button {
-            background-color: var(--primary-color);
-            color: white;
+
+        button,
+        .btn {
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             font-size: 1rem;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, opacity 0.3s, transform 0.1s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            vertical-align: middle;
+            line-height: 1.5;
+            text-decoration: none;
         }
-        
-        button:hover {
-            background-color: #0f2a53;
+
+        button:active,
+        .btn:active {
+            transform: scale(0.98);
         }
-        
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        button i {
+
+        button i,
+        .btn i {
             margin-right: 8px;
         }
-        
+
+        button:disabled,
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #0f2a53;
+        }
+
+        .secondary-btn,
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover:not(:disabled),
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .btn-info:hover:not(:disabled) {
+            background-color: #138496;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            background-color: #c89a50;
+        }
+
+        .btn-accent:disabled {
+            background-color: #e0c8a0;
+            color: #a0a0a0;
+        }
+
+        /* --- Styles for AI buttons --- */
+        #aiSummarizeBtn,
+        #aiSearchBtn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        #aiSummarizeButtonContainer {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        #aiSearchButtonContainer {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        /* --- Combined AI Search Input Area --- */
+        .ai-search-input-area {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #eef1f5;
+            /* Light neutral background */
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            /* Accent border */
+            border-radius: 4px;
+            display: none;
+            /* Initially hidden, shown on first AI Search click */
+        }
+
+        .ai-search-input-area p {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* --- Styles for AI Court Keywords (within combined area) --- */
+        .ai-court-keywords-section {
+            margin-bottom: 15px;
+            /* Space below court section */
+        }
+
+        .ai-court-keywords-section label {
+            color: var(--info-color);
+            /* Distinct color for court label */
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .ai-court-keywords-section select {
+            margin-bottom: 10px;
+        }
+
+        .court-keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+            /* Space below select */
+            min-height: 20px;
+            /* Ensure container has some height even when empty */
+        }
+
+        .court-keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--court-tag-bg);
+            color: var(--court-tag-text);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+
+        /* --- Styles for AI General Keywords (within combined area) --- */
+        .ai-general-keywords-section {
+            /* Optional: Add top border if needed */
+            /* border-top: 1px dashed var(--border-color); */
+            /* padding-top: 15px; */
+        }
+
+        .ai-general-keywords-section p {
+            color: var(--primary-color);
+            /* Default label color */
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            /* Space below general tags */
+            min-height: 20px;
+        }
+
+        .keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--general-tag-bg);
+            color: var(--general-tag-text);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Common delete button style for both keyword types */
+        .keyword-delete {
+            margin-left: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            /* Slightly transparent white */
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0 2px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .keyword-delete:hover {
+            color: white;
+            /* Solid white on hover */
+        }
+
+        /* Specific hover for general tags */
+        .keyword-tag .keyword-delete:hover {
+            color: var(--accent-color);
+        }
+
+        /* Specific hover for court tags */
+        .court-keyword-tag .keyword-delete:hover {
+            color: var(--warning-color);
+            /* Yellowish hover for court tags */
+        }
+
+
+        .add-keyword-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .add-keyword-section input[type="text"] {
+            flex-grow: 1;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        .add-keyword-section button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* --- Styles for AI Search Results List --- */
+        .search-results-list-container {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            /* Reduced padding slightly to accommodate filter */
+            max-height: 350px;
+            /* Increased max-height */
+            overflow-y: auto;
+            margin-top: 15px;
+            display: none;
+            /* Initially hidden */
+        }
+
+        /* --- NEW: Styles for Results Filter --- */
+        .results-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            /* Allow wrapping on smaller screens */
+        }
+
+        .results-filter-container label {
+            margin-bottom: 0;
+            /* Override default label margin */
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        .results-filter-container select {
+            padding: 6px 10px;
+            /* Smaller padding */
+            font-size: 0.9rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            flex-grow: 1;
+            /* Allow select to grow */
+            min-width: 150px;
+            /* Minimum width */
+        }
+
+        /* --- END: Styles for Results Filter --- */
+
+
+        .search-results-list {
+            /* This div will now hold the actual list items */
+        }
+
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 5px;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        /* Make hidden items take no space */
+        .search-result-item.hidden {
+            display: none;
+        }
+
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-right: 15px;
+            flex-grow: 1;
+            word-break: break-word;
+        }
+
+        .search-result-item a:hover {
+            text-decoration: underline;
+            color: var(--accent-color);
+        }
+
+        .search-result-item .btn-add-precedent {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 60px;
+            background-color: var(--secondary-color);
+            /* Lighter gray for add button */
+            color: var(--primary-color);
+            border: 1px solid #ccc;
+        }
+
+        .search-result-item .btn-add-precedent:hover:not(:disabled) {
+            background-color: #e2e6ea;
+            border-color: #bbb;
+        }
+
+
+        .search-result-item .btn-add-precedent:disabled {
+            background-color: var(--added-color);
+            color: white;
+            cursor: default;
+            opacity: 0.8;
+            border-color: var(--added-color);
+        }
+
+        .search-result-item .btn-add-precedent:disabled:hover {
+            background-color: var(--added-color);
+        }
+
+        .no-results-message {
+            color: var(--text-color);
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* --- End AI Styles --- */
+
+
         .buttons-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             flex-wrap: wrap;
             gap: 10px;
         }
-        
-        .secondary-btn {
-            background-color: #6c757d;
+
+        .buttons-container>div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        
-        .secondary-btn:hover {
-            background-color: #5a6268;
+
+        @media (min-width: 769px) {
+            .btn-uniform {
+                min-width: 120px;
+                height: 44px;
+                padding: 10px 15px !important;
+                font-size: 0.95rem !important;
+                white-space: nowrap !important;
+            }
+
+            .buttons-container {
+                align-items: center;
+            }
         }
-        
+
+        .document-buttons .btn-uniform,
+        .document-buttons button {
+            min-width: 120px;
+            height: 40px;
+            padding: 8px 15px !important;
+            font-size: 0.9rem !important;
+            white-space: nowrap !important;
+        }
+
         .helper-text {
             display: block;
-            margin-top: 5px;
+            margin-top: 6px;
             font-size: 0.85rem;
-            color: #666;
+            color: #6c757d;
         }
-        
+
         .error-message {
             color: var(--error-color);
             font-size: 0.85rem;
-            margin-top: 5px;
+            margin-top: 6px;
             display: none;
+            font-weight: 500;
         }
-        
+
         input.error,
         textarea.error,
         select.error {
-            border-color: var(--error-color);
+            border-color: var(--error-color) !important;
+            background-color: #fff3f3;
         }
-        
+
+        input.error:focus,
+        textarea.error:focus,
+        select.error:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+        }
+
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             color: white;
-            display: none;
+            text-align: center;
         }
-        
+
+        .loading-overlay p {
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
         .spinner {
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top: 5px solid var(--accent-color);
+            border-top-color: var(--accent-color);
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 15px 25px;
-            border-radius: 4px;
+            border-radius: 6px;
             color: white;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             z-index: 1001;
-            transition: transform 0.3s ease;
-            transform: translateX(150%);
+            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            transform: translateX(120%);
+            opacity: 0;
+            min-width: 250px;
         }
-        
+
         .notification.show {
             transform: translateX(0);
+            opacity: 1;
         }
-        
+
         .notification i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+            margin-right: 12px;
+            font-size: 1.3rem;
         }
-        
+
         .notification.success {
             background-color: var(--success-color);
         }
-        
+
         .notification.error {
             background-color: var(--error-color);
         }
-        
+
         .notification.warning {
             background-color: var(--warning-color);
-            color: #212529;
+            color: #333;
         }
-        
+
+        .notification.info {
+            background-color: var(--info-color);
+        }
+
         .tooltip {
             position: relative;
             display: inline-block;
             margin-left: 8px;
-            color: var(--primary-color);
+            color: var(--info-color);
             cursor: help;
         }
-        
+
         .tooltip .tooltip-text {
             visibility: hidden;
-            width: 250px;
+            width: 280px;
             background-color: #333;
             color: white;
             text-align: left;
             border-radius: 4px;
-            padding: 8px;
+            padding: 10px 12px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
+            bottom: 130%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             font-weight: normal;
             font-size: 0.85rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            line-height: 1.5;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+            pointer-events: none;
         }
-        
+
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
         .tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
-        
+
         footer {
             text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            color: #666;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            color: #6c757d;
             font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
         }
-        
-        /* 模態窗口樣式 */
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -340,67 +770,118 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease-out;
         }
-        
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         .modal-content {
             background-color: #fefefe;
-            margin: 2% auto;
-            padding: 20px;
+            margin: 3% auto;
+            padding: 25px 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            width: 80%;
-            max-width: 1000px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            width: 85%;
+            max-width: 1100px;
             max-height: 90vh;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease-out;
         }
-        
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
-        
+
+        .modal-header h2 {
+            margin: 0;
+            border: none;
+            padding: 0;
+            font-size: 1.5rem;
+        }
+
         .close {
             color: #aaa;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.2s ease;
+            line-height: 1;
         }
-        
+
         .close:hover,
         .close:focus {
-            color: black;
+            color: #333;
             text-decoration: none;
         }
-        
+
         .document-area {
-            background-color: white;
-            padding: 20px;
-            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 25px;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
             white-space: pre-wrap;
             line-height: 1.8;
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            font-size: 1rem;
         }
-        
+
         .document-buttons {
-            margin-top: 20px;
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             justify-content: flex-end;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
         }
-        
-        /* 列印樣式 */
+
         @media print {
-            .modal-header, .document-buttons, .close {
-                display: none !important;
+            body {
+                background-color: white;
             }
-            
-            .modal, .modal-content {
+
+            body * {
+                visibility: hidden;
+            }
+
+            .modal,
+            .modal *,
+            .document-area,
+            .document-area * {
+                visibility: visible;
+            }
+
+            .modal {
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -411,911 +892,1288 @@
                 overflow: visible;
                 background-color: white;
                 box-shadow: none;
+                border: none;
+                animation: none;
             }
-            
+
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+                max-height: none;
+                animation: none;
+            }
+
+            .modal-header,
+            .document-buttons,
+            .close,
+            .search-results-list-container,
+            .ai-search-input-area,
+            .results-filter-container
+
+            /* Hide filter on print */
+                {
+                display: none !important;
+            }
+
             .document-area {
                 border: none;
                 padding: 0;
+                margin: 0;
+                white-space: pre-wrap !important;
+                overflow: visible;
+                background-color: white;
+                font-size: 12pt;
+                line-height: 1.6;
+            }
+
+            header,
+            footer,
+            .container>.card:not(.modal),
+            .debug-panel,
+            .notification,
+            .loading-overlay {
+                display: none;
             }
         }
-        
-        /* Debug 面板 */
+
         .debug-panel {
             position: fixed;
-            bottom: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.8);
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.85);
             color: #0f0;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            max-width: 300px;
-            max-height: 200px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            max-width: 350px;
+            max-height: 250px;
             overflow: auto;
             z-index: 9999;
             display: none;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
-        
+
         .debug-panel.active {
             display: block;
         }
-        
-        /* 響應式樣式 */
+
+        .debug-panel .log-entry {
+            border-bottom: 1px dotted #333;
+            padding: 2px 0;
+            word-break: break-all;
+        }
+
+        .debug-panel .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .debug-panel .log-entry.error {
+            color: #f88;
+        }
+
+        .debug-panel .log-entry.warning {
+            color: #ff8;
+        }
+
+        .debug-panel .log-entry.request {
+            color: #8bf;
+        }
+
+        .debug-panel .log-entry.response {
+            color: #8f8;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
+                margin-top: 10px;
             }
-            
+
             .card {
                 padding: 1rem;
             }
-            
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
-            
+
             .form-col {
                 width: 100%;
+                margin-bottom: 1.2rem;
             }
-            
-            button {
-                width: 100%;
-                margin-bottom: 10px;
+
+            .form-col:last-child {
+                margin-bottom: 0;
             }
-            
+
             .buttons-container {
                 flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
             }
-            
+
+            .buttons-container>div:first-child {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .buttons-container button,
+            .buttons-container .btn-uniform {
+                width: 100% !important;
+                min-width: auto !important;
+                margin: 0 !important;
+            }
+
             .modal-content {
                 width: 95%;
                 margin: 5% auto;
+                padding: 15px 20px;
+                max-height: 85vh;
             }
+
+            .document-buttons {
+                justify-content: center;
+            }
+
+            .document-buttons button {
+                flex-grow: 1;
+                min-width: 100px;
+            }
+
+            #aiSummarizeButtonContainer,
+            #aiSearchButtonContainer {
+                text-align: center;
+            }
+
+            #aiSummarizeBtn,
+            #aiSearchBtn {
+                width: auto;
+                display: inline-block;
+            }
+
+            .add-keyword-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .add-keyword-section input[type="text"] {
+                width: 100%;
+            }
+
+            .add-keyword-section button {
+                width: 100%;
+            }
+
+            /* --- Adjustments for Results Filter on Mobile --- */
+            .results-filter-container {
+                gap: 5px;
+                /* Reduce gap */
+            }
+
+            .results-filter-container label {
+                width: 100%;
+                /* Make label full width */
+                margin-bottom: 5px;
+            }
+
+            .results-filter-container select {
+                width: 100%;
+                /* Make select full width */
+            }
+
+            /* --- End Mobile Adjustments --- */
+
+
+            .search-result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .search-result-item a {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .search-result-item .btn-add-precedent {
+                align-self: flex-end;
+            }
+
+
         }
 
-        /* 新增的按鈕樣式 */
-        .btn-uniform {
-            width: 120px !important;
-            height: 44px !important;
-            padding: 10px !important;
-            margin: 5px !important;
-            font-size: 0.95rem !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+        /* Style for the custom case type input */
+        #caseTypeCustom {
+            margin-top: 10px;
+            display: none;
         }
     </style>
 </head>
+
 <body>
     <header>
-        <h1>律師訴狀生成系統</h1>
+        <h1>民事訴訟書狀生成系統</h1>
     </header>
 
     <div class="container">
         <div class="card">
             <h2>案件資料填寫</h2>
             <form id="legalDocForm">
-                <!-- 表單部分保持不變 -->
+                <!-- Section 1: Basic Info -->
                 <div class="form-section">
                     <h3>基本資料</h3>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="caseType" class="required">訴狀類型</label>
+                                <label for="caseType" class="required">書狀類型</label>
                                 <select id="caseType" name="caseType" required>
-                                    <option value="">請選擇訴狀類型</option>
-                                    <option value="民事起訴狀">民事起訴狀</option>
-                                    <option value="民事答辯狀">民事答辯狀</option>
-                                    <option value="民事準備狀">民事準備狀</option>
-                                    <option value="民事辯論意旨狀">民事辯論意旨狀</option>
-                                    <option value="民事上訴狀">民事上訴狀</option>
+                                    <option value="" disabled selected>請選擇書狀類型</option>
+                                    <option value="起訴狀">起訴狀</option>
+                                    <option value="答辯狀">答辯狀</option>
+                                    <option value="準備書狀">準備書狀</option>
+                                    <option value="答辯理由狀">答辯理由狀</option>
+                                    <option value="補充答辯狀">補充答辯狀</option>
+                                    <option value="爭點整理書狀">爭點整理書狀</option>
+                                    <option value="陳報狀">陳報狀</option>
+                                    <option value="陳述意見狀">陳述意見狀</option>
+                                    <option value="調查證據聲請狀">調查證據聲請狀</option>
+                                    <option value="辯論意旨狀">辯論意旨狀</option>
+                                    <option value="反訴狀">反訴狀</option>
+                                    <option value="上訴理由狀">上訴理由狀</option>
+                                    <option value="聲明上訴狀">聲明上訴狀</option>
+                                    <option value="custom">自行輸入...</option>
                                 </select>
-                                <div class="error-message" id="caseType-error">請選擇訴狀類型</div>
+                                <input type="text" id="caseTypeCustom" name="caseTypeCustom" placeholder="請輸入自訂書狀類型"
+                                    style="display: none; margin-top: 10px;">
+                                <div class="error-message" id="caseType-error">請選擇或輸入書狀類型</div>
+                                <div class="error-message" id="caseTypeCustom-error">請輸入自訂書狀類型</div>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="caseNumber">案號 (選填)</label>
-                                <input type="text" id="caseNumber" name="caseNumber" placeholder="例：112年度訴字第1234號">
-                                <span class="helper-text">若為新案件可不填</span>
+                                <input type="text" id="caseNumber" name="caseNumber" placeholder="例：113年度訴字第1234號">
+                                <span class="helper-text">若為新案件或未知案號可不填</span>
                             </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="courtName">法院名稱</label>
-                                <select id="courtName" name="courtName">
+                                <label for="courtName" class="required">法院名稱</label>
+                                <select id="courtName" name="courtName" required>
+                                    <option value="" disabled selected>請選擇法院</option>
+                                    <option value="憲法法庭">憲法法庭</option>
+                                    <option value="司法院刑事補償法庭">司法院刑事補償法庭</option>
+                                    <option value="司法院--訴願決定">司法院--訴願決定</option>
+                                    <option value="最高法院">最高法院</option>
+                                    <option value="最高行政法院">最高行政法院</option>
+                                    <option value="懲戒法院懲戒法庭">懲戒法院懲戒法庭</option>
+                                    <option value="懲戒法院職務法庭">懲戒法院職務法庭</option>
+                                    <option value="臺灣高等法院">臺灣高等法院</option>
+                                    <option value="臺灣高等法院--訴願決定">臺灣高等法院--訴願決定</option>
+                                    <option value="臺北高等行政法院">臺北高等行政法院</option>
+                                    <option value="臺北高等行政法院 地方庭">臺北高等行政法院 地方庭</option>
+                                    <option value="臺中高等行政法院">臺中高等行政法院</option>
+                                    <option value="臺中高等行政法院 地方庭">臺中高等行政法院 地方庭</option>
+                                    <option value="高雄高等行政法院">高雄高等行政法院</option>
+                                    <option value="高雄高等行政法院 地方庭">高雄高等行政法院 地方庭</option>
+                                    <option value="智慧財產及商業法院">智慧財產及商業法院</option>
+                                    <option value="臺灣高等法院 臺中分院">臺灣高等法院 臺中分院</option>
+                                    <option value="臺灣高等法院 臺南分院">臺灣高等法院 臺南分院</option>
+                                    <option value="臺灣高等法院 高雄分院">臺灣高等法院 高雄分院</option>
+                                    <option value="臺灣高等法院 花蓮分院">臺灣高等法院 花蓮分院</option>
                                     <option value="臺灣臺北地方法院">臺灣臺北地方法院</option>
+                                    <option value="臺灣士林地方法院">臺灣士林地方法院</option>
                                     <option value="臺灣新北地方法院">臺灣新北地方法院</option>
+                                    <option value="臺灣宜蘭地方法院">臺灣宜蘭地方法院</option>
+                                    <option value="臺灣基隆地方法院">臺灣基隆地方法院</option>
                                     <option value="臺灣桃園地方法院">臺灣桃園地方法院</option>
+                                    <option value="臺灣新竹地方法院">臺灣新竹地方法院</option>
+                                    <option value="臺灣苗栗地方法院">臺灣苗栗地方法院</option>
                                     <option value="臺灣臺中地方法院">臺灣臺中地方法院</option>
+                                    <option value="臺灣彰化地方法院">臺灣彰化地方法院</option>
+                                    <option value="臺灣南投地方法院">臺灣南投地方法院</option>
+                                    <option value="臺灣雲林地方法院">臺灣雲林地方法院</option>
+                                    <option value="臺灣嘉義地方法院">臺灣嘉義地方法院</option>
                                     <option value="臺灣臺南地方法院">臺灣臺南地方法院</option>
                                     <option value="臺灣高雄地方法院">臺灣高雄地方法院</option>
-                                    <option value="其他法院">其他法院</option>
+                                    <option value="臺灣橋頭地方法院">臺灣橋頭地方法院</option>
+                                    <option value="臺灣花蓮地方法院">臺灣花蓮地方法院</option>
+                                    <option value="臺灣臺東地方法院">臺灣臺東地方法院</option>
+                                    <option value="臺灣屏東地方法院">臺灣屏東地方法院</option>
+                                    <option value="臺灣澎湖地方法院">臺灣澎湖地方法院</option>
+                                    <option value="福建高等法院金門分院">福建高等法院金門分院</option>
+                                    <option value="福建金門地方法院">福建金門地方法院</option>
+                                    <option value="福建連江地方法院">福建連江地方法院</option>
+                                    <option value="臺灣高雄少年及家事法院">臺灣高雄少年及家事法院</option>
+                                    <option value="其他法院">其他法院 (請於書狀內容確認)</option>
                                 </select>
+                                <div class="error-message" id="courtName-error">請選擇法院名稱</div>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="branchName">股別 (選填)</label>
-                                <input type="text" id="branchName" name="branchName" placeholder="例：甲股">
+                                <input type="text" id="branchName" name="branchName" placeholder="例：民事庭 甲股">
                                 <span class="helper-text">若不確定可不填</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Section 2: Parties -->
                 <div class="form-section">
                     <h3>當事人資料</h3>
                     <div class="form-group">
                         <label for="plaintiff" class="required">原告資料
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請填寫完整資料，包含姓名、地址、法定代理人（如有）等。公司請填寫統一編號。</span>
-                            </span>
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請填寫原告完整姓名、地址。若有多位原告，請換行分隔。法定代理人亦請註明。</span></span>
                         </label>
-                        <textarea id="plaintiff" name="plaintiff" placeholder="例：張三 住台北市中正區忠孝東路100號" required></textarea>
+                        <textarea id="plaintiff" name="plaintiff" placeholder="例：
+原告 林大明
+住址：臺北市信義區市府路1號" required></textarea>
                         <div class="error-message" id="plaintiff-error">請填寫原告資料</div>
                     </div>
-                    
                     <div class="form-group">
                         <label for="plaintiffRepresentative">原告訴訟代理人 (選填)</label>
-                        <textarea id="plaintiffRepresentative" name="plaintiffRepresentative" placeholder="例：王律師 設台北市信義區松仁路50號10樓"></textarea>
-                        <span class="helper-text">若無委任律師可不填</span>
+                        <textarea id="plaintiffRepresentative" name="plaintiffRepresentative" placeholder="例：
+訴訟代理人 王大明律師
+設址：臺北市中正區重慶南路一段122號"></textarea>
+                        <span class="helper-text">若有委任律師請填寫</span>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="defendant" class="required">被告資料</label>
-                        <textarea id="defendant" name="defendant" placeholder="例：李四 住高雄市前鎮區中山二路300號" required></textarea>
+                        <label for="defendant" class="required">被告資料
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請填寫被告完整姓名、地址。若有多位被告，請換行分隔。</span></span>
+                        </label>
+                        <textarea id="defendant" name="defendant" placeholder="例：
+被告 王小華
+住址：新北市板橋區縣民大道二段7號" required></textarea>
                         <div class="error-message" id="defendant-error">請填寫被告資料</div>
                     </div>
-                    
                     <div class="form-group">
                         <label for="defendantRepresentative">被告訴訟代理人 (選填)</label>
-                        <textarea id="defendantRepresentative" name="defendantRepresentative" placeholder="例：陳律師 設台北市中山區南京東路150號5樓"></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>案件內容</h3>
-                    <div class="form-group">
-                        <label for="caseTitle" class="required">案件標題</label>
-                        <input type="text" id="caseTitle" name="caseTitle" placeholder="例：請求給付貨款事件" required>
-                        <div class="error-message" id="caseTitle-error">請填寫案件標題</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="facts" class="required">案件事實
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請按時間順序條列案件主要事實，每個事件一行，至少包含5個關鍵事件。</span>
-                            </span>
-                        </label>
-                        <textarea id="facts" name="facts" rows="6" placeholder="例：
-1. 原告於112年1月1日與被告簽訂買賣契約
-2. 原告於112年1月15日交付貨物
-3. 被告於112年2月1日應付款但未支付
-..." required></textarea>
-                        <div class="error-message" id="facts-error">請填寫案件事實，至少5條</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="requests" class="required">請求事項
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請條列您希望法院判決的具體請求內容，每項請求一行。</span>
-                            </span>
-                        </label>
-                        <textarea id="requests" name="requests" rows="4" placeholder="例：
-1. 被告應給付原告新台幣30萬元及自起訴狀送達翌日起至清償日止，按年息5%計算之利息
-2. 訴訟費用由被告負擔
-..." required></textarea>
-                        <div class="error-message" id="requests-error">請填寫請求事項</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="evidence" class="required">證據資料
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請條列您提供的證據，例如：原證1、原證2等，每項證據一行。</span>
-                            </span>
-                        </label>
-                        <textarea id="evidence" name="evidence" rows="4" placeholder="例：
-原證1：買賣契約書影本1份
-原證2：送貨單影本1份
-原證3：催款通知書影本1份
-..." required></textarea>
-                        <div class="error-message" id="evidence-error">請填寫證據資料</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="laws">適用法條 (選填)
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請列出適用的法條，每條一行。</span>
-                            </span>
-                        </label>
-                        <textarea id="laws" name="laws" rows="3" placeholder="例：
-民法第153條（契約之成立）
-民法第199條（給付遲延）
-..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="precedents">相關判例 (選填)
-                            <span class="tooltip"><i class="fas fa-question-circle"></i>
-                                <span class="tooltip-text">請列出相關判例，每則一行。</span>
-                            </span>
-                        </label>
-                        <textarea id="precedents" name="precedents" rows="2" placeholder="例：
-最高法院109年台上字第123號判決
-..."></textarea>
+                        <textarea id="defendantRepresentative" name="defendantRepresentative" placeholder="例：
+訴訟代理人 陳小美律師
+設址：臺中市西區自由路一段91號"></textarea>
                     </div>
                 </div>
 
+                <!-- Section 3: Case Details -->
                 <div class="form-section">
-                    <h3>聯絡資訊</h3>
+                    <h3>案件內容</h3>
+                    <div class="form-group">
+                        <label for="caseTitle" class="required">案件案由</label>
+                        <input type="text" id="caseTitle" name="caseTitle" placeholder="例：請求返還借款、請求給付貨款、確認所有權存在等"
+                            required>
+                        <div class="error-message" id="caseTitle-error">請填寫案件案由</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="caseProcess">案件詳細經過 (選填)
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">若需 AI
+                                    協助統整案情摘要或事實，請在此詳細描述案件的完整過程、時間、地點、人物、對話、事件等細節。點選下方按鈕觸發 AI。</span></span>
+                        </label>
+                        <textarea id="caseProcess" name="caseProcess" rows="6"
+                            placeholder="請詳細描述案件從發生到現在的完整經過..."></textarea>
+                        <div id="aiSummarizeButtonContainer">
+                            <!-- AI Summarize button will be dynamically added here by JS -->
+                        </div>
+                        <div class="error-message" id="caseProcess-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="requests" class="required">訴之聲明 (請求事項)
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請條列您希望法院判決的具體內容，應明確、可執行。例如：被告應給付原告...元、確認...契約無效等。利息計算方式也請寫明。</span></span>
+                        </label>
+                        <textarea id="requests" name="requests" rows="5" placeholder="例：
+一、被告應給付原告新台幣○○萬元整。
+二、及自起書狀繕本送達翌日起至清償日止，按週年利率百分之五計算之利息。
+三、訴訟費用由被告負擔。
+（若為起訴，可加：四、原告願供擔保，請准宣告假執行。）" required></textarea>
+                        <div class="error-message" id="requests-error">請填寫訴之聲明 (請求事項)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="facts" class="required">事實及理由
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請依時間順序，分點敘述支持您訴之聲明的客觀事實與法律理由。每點應簡潔明瞭，至少需包含3個關鍵事實點。可引用證據（如：詳參原證1）。</span></span>
+                        </label>
+                        <textarea id="facts" name="facts" rows="8" placeholder="例：
+一、原告於民國113年○月○日借款新台幣○○萬元予被告，約定清償日為113年○月○日（詳參原證1：借據影本）。
+二、詎被告屆期竟未清償，經原告於113年○月○日以存證信函催告（詳參原證2：存證信函影本），被告仍置之不理。
+三、依民法第478條規定，被告自應負返還借款之責。..." required></textarea>
+                        <div class="error-message" id="facts-error">請填寫事實及理由，至少3點</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="evidence" class="required">證據名稱及件數
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請條列您提出的所有證據文件名稱及其件數。例如：原證1：借據影本乙份。若為被告，則用「被證」。</span></span>
+                        </label>
+                        <textarea id="evidence" name="evidence" rows="4" placeholder="例：
+原證1：借據影本乙份
+原證2：存證信函暨回執影本乙份
+原證3：匯款紀錄截圖乙張
+..." required></textarea>
+                        <div class="error-message" id="evidence-error">請填寫證據名稱及件數</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="laws">適用法條 (選填)
+                            <span class="tooltip"><i class="fas fa-question-circle"></i><span
+                                    class="tooltip-text">請列出您認為適用的主要法條，每條一行。AI 搜尋結果將會填入此處。</span></span>
+                        </label>
+                        <textarea id="laws" name="laws" rows="3" placeholder="例：
+民法第474條
+民法第478條
+民法第229條第1項
+民事訴訟法第78條"></textarea>
+                        <span class="helper-text">可不填，由 AI 統整或生成書狀時判斷，AI 搜尋結果亦會填入此處</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="precedents">相關判決 (選填)</label>
+                        <textarea id="precedents" name="precedents" rows="3" placeholder="例：
+最高法院○○年度台上字第○○號判決意旨參照
+（點選下方 AI 搜尋可查找相關判決，並手動加入）"></textarea>
+                        <span class="helper-text">若有引用特定判決可填寫，或使用 AI 搜尋後加入。</span>
+
+                        <!-- === Combined AI Search Input Area === -->
+                        <div id="aiSearchInputArea" class="ai-search-input-area">
+                            <!-- === Court Keywords Section === -->
+                            <div class="ai-court-keywords-section">
+                                <label for="courtSelect">法院關鍵字篩選 (可多選，若無選擇預設為所有法院):</label>
+                                <select id="courtSelect" name="courtSelect">
+                                    <option value="" disabled selected>-- 請選擇法院加入篩選 --</option>
+                                    <!-- Options will be dynamically populated by JS -->
+                                </select>
+                                <div class="court-keyword-list" id="courtKeywordList">
+                                    <!-- Selected court tags will be inserted here -->
+                                </div>
+                            </div>
+                            <!-- === General Keywords Section === -->
+                            <div class="ai-general-keywords-section">
+                                <p>一般搜尋關鍵字 (可增刪):</p>
+                                <div class="keyword-list" id="keywordList">
+                                    <!-- General keyword tags will be inserted here -->
+                                </div>
+                                <div class="add-keyword-section">
+                                    <input type="text" id="addKeywordInput" placeholder="新增一般關鍵字...">
+                                    <button type="button" id="addKeywordBtn" class="btn btn-secondary"><i
+                                            class="fas fa-plus"></i> 新增</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- === END Combined AI Search Input Area === -->
+
+                        <!-- === Container for AI Search Button === -->
+                        <div id="aiSearchButtonContainer"></div>
+                        <!-- === END Container === -->
+
+                        <!-- === Container for AI Search Results === -->
+                        <div id="searchResultsListContainer" class="search-results-list-container">
+                            <!-- NEW: Filter container added here -->
+                            <div id="resultsFilterContainer" class="results-filter-container" style="display: none;">
+                                <label for="resultsCourtFilterSelect">依法院篩選結果：</label>
+                                <select id="resultsCourtFilterSelect" name="resultsCourtFilterSelect">
+                                    <!-- Filter options will be populated here -->
+                                </select>
+                            </div>
+                            <!-- This div will hold the actual result items -->
+                            <div id="searchResultsItems" class="search-results-list">
+                                <!-- Search results (link + add button) will be dynamically added here -->
+                            </div>
+                        </div>
+                        <!-- === END Search Results Container === -->
+
+                    </div>
+                </div>
+
+                <!-- Section 4: Contact Info -->
+                <div class="form-section">
+                    <h3>聯絡資訊 (供系統通知使用)</h3>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="email" class="required">電子郵件</label>
-                                <input type="email" id="email" name="email" placeholder="user@example.com" required>
-                                <div class="error-message" id="email-error">請填寫有效的電子郵件</div>
+                                <label for="email">電子郵件 (選填)</label>
+                                <input type="email" id="email" name="email" placeholder="請輸入常用有效的電子郵件信箱">
+                                <div class="error-message" id="email-error">請填寫有效的電子郵件格式</div>
+                                <span class="helper-text">若填寫，可用於接收生成結果通知或文件</span>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="phone">聯絡電話 (選填)</label>
-                                <input type="text" id="phone" name="phone" placeholder="例：0912345678">
+                                <input type="text" id="phone" name="phone" placeholder="例：0912-345678">
+                                <span class="helper-text">非必填</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="buttons-container" id="buttonsContainer">
-                    <!-- 按鈕將由JavaScript動態添加 -->
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- 模態窗口用於顯示生成的訴狀 -->
+                <!-- Buttons Container -->
+                <div class="buttons-container" id="buttonsContainer"></div>
+            </form>
+        </div> <!-- End Card -->
+    </div> <!-- End Container -->
+
+    <!-- Modal for Displaying Generated Document -->
     <div id="documentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>生成的訴狀</h2>
-                <span class="close">&times;</span>
+                <h2>生成的書狀預覽</h2> <span class="close" title="關閉">×</span>
             </div>
-            <div class="document-area" id="documentContent"></div>
+            <div class="document-area" id="documentContent" aria-live="polite"></div>
             <div class="document-buttons">
-                <button id="copyBtn" class="secondary-btn">
-                    <i class="fas fa-copy"></i> 複製內容
-                </button>
-                <button id="printBtn">
-                    <i class="fas fa-print"></i> 列印訴狀
-                </button>
-                <button id="downloadBtn">
-                    <i class="fas fa-download"></i> 下載文件
-                </button>
-                <button id="emailBtn">
-                    <i class="fas fa-envelope"></i> 寄送至信箱
-                </button>
+                <button id="copyBtn" class="secondary-btn btn-uniform" title="複製書狀內容至剪貼簿"><i class="fas fa-copy"></i>
+                    複製內容</button>
+                <button id="printBtn" class="secondary-btn btn-uniform" title="列印書狀"><i class="fas fa-print"></i>
+                    列印</button>
+                <button id="downloadBtn" class="secondary-btn btn-uniform" title="下載為 .txt 文字檔"><i
+                        class="fas fa-download"></i> 下載 (.txt)</button>
+                <button id="emailBtn" class="secondary-btn btn-uniform" title="將書狀內容(模擬)寄送至您填寫的信箱"><i
+                        class="fas fa-envelope"></i> 寄送Email</button>
             </div>
         </div>
     </div>
 
+    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <p>正在生成訴狀，請稍候...</p>
-        <p id="estimatedTime">預計需時：30-60秒</p>
+        <p>正在處理中，請稍候...</p>
+        <p id="estimatedTime"></p>
     </div>
-
+    <!-- Notification Area -->
     <div class="notification" id="notification"></div>
+    <!-- Debug Panel -->
     <div class="debug-panel" id="debugPanel"></div>
 
     <footer>
-        <p>© 2025 律師訴狀生成系統 | 本系統模擬律師風格，僅供參考</p>
-        <p><small>使用本系統生成的訴狀建議由專業律師審核後使用</small></p>
-        <p><small>wtlee328 (2025-04-10 17:24:38)</small></p>
+        <p>© 2025 民事訴訟書狀生成系統 | 本系統及生成內容僅供學術研究與模擬參考</p>
+        <p><small><strong>重要提醒：</strong>使用本系統生成的任何文件均不構成法律意見，請務必諮詢專業律師並由其審閱修改後再行使用。</small></p>
+        <p><small>Debug Version: <span id="debugVersion"></span> (Press Alt+D for debug panel)</small></p>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DOM Element References ---
             const form = document.getElementById('legalDocForm');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const notification = document.getElementById('notification');
             const debugPanel = document.getElementById('debugPanel');
             const modal = document.getElementById('documentModal');
-            const closeModalBtn = document.querySelector('.close');
+            const closeModalBtn = modal.querySelector('.close');
             const documentContent = document.getElementById('documentContent');
             const copyBtn = document.getElementById('copyBtn');
             const printBtn = document.getElementById('printBtn');
             const downloadBtn = document.getElementById('downloadBtn');
             const emailBtn = document.getElementById('emailBtn');
             const buttonsContainer = document.getElementById('buttonsContainer');
-            
-            // N8N Webhook URL - 使用 Ngrok URL
-            const webhookUrl = 'https://73f5-122-100-75-75.ngrok-free.app/webhook/legal-document';
-            
-            // 調試功能
-            function log(message, type = 'info') {
-                if (window.debugInfo.logRequests || type !== 'request') {
-                    console.log(`[${type.toUpperCase()}][${new Date().toLocaleTimeString()}] ${message}`);
-                    
-                    // 添加到調試面板
-                    const logEntry = document.createElement('div');
-                    logEntry.className = `log-entry ${type}`;
-                    logEntry.textContent = `[${type}] ${message}`;
-                    debugPanel.appendChild(logEntry);
-                    
-                    // 限制調試面板日誌數量
-                    while (debugPanel.childNodes.length > 50) {
-                        debugPanel.removeChild(debugPanel.firstChild);
-                    }
-                    
-                    // 滾動到最新日誌
-                    debugPanel.scrollTop = debugPanel.scrollHeight;
-                }
-            }
-            
-            // 顯示/隱藏調試面板 (按Alt+D快速鍵)
-            document.addEventListener('keydown', function(e) {
-                if (e.altKey && e.key === 'd') {
-                    debugPanel.classList.toggle('active');
-                    e.preventDefault();
-                }
-            });
-            
-            // 保存生成的訴狀到本地存儲
-            function saveDocumentToLocalStorage(document) {
-                localStorage.setItem('wtlee328_lastDocument', document);
-                localStorage.setItem('wtlee328_lastDocumentTime', new Date().toISOString());
-                log('訴狀已保存到本地存儲');
-            }
-            
-            // 從本地存儲恢復訴狀
-            function loadDocumentFromLocalStorage() {
-                return {
-                    document: localStorage.getItem('wtlee328_lastDocument'),
-                    timestamp: localStorage.getItem('wtlee328_lastDocumentTime')
-                };
-            }
-            
-            // 關閉模態窗口
-            closeModalBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-            
-            // 點擊模態窗口外部時關閉
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
-            // 複製訴狀內容
-            copyBtn.addEventListener('click', function() {
-                const textToCopy = documentContent.textContent;
-                navigator.clipboard.writeText(textToCopy).then(function() {
-                    showNotification('訴狀內容已複製到剪貼簿', 'success');
-                }, function() {
-                    showNotification('無法複製內容，請手動選取並複製', 'error');
-                });
-            });
-            
-            // 列印訴狀
-            printBtn.addEventListener('click', function() {
-                window.print();
-            });
-            
-            // 下載訴狀為文本文件
-            downloadBtn.addEventListener('click', function() {
-                const text = documentContent.textContent;
-                const caseType = document.getElementById('caseType').value || '訴狀';
-                const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD格式
-                const filename = `${caseType}_${today}_wtlee328.txt`;
-                
-                const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
-                
-                // 創建下載鏈接
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showNotification(`已下載文件：${filename}`, 'success');
-                log(`訴狀已下載為 ${filename}`);
-            });
-            
-            // 發送訴狀到用戶信箱
-            emailBtn.addEventListener('click', function() {
-                const userEmail = document.getElementById('email').value;
-                if (!userEmail) {
-                    showNotification('請先在表單中填寫有效的電子郵件地址', 'error');
-                    return;
-                }
-                
-                showNotification(`訴狀將發送至：${userEmail}，請稍候...`, 'success');
-                
-                // 在實際應用中，這裡會發送請求到後端進行郵件發送
-                setTimeout(() => {
-                    showNotification(`訴狀已成功發送至您的信箱：${userEmail}`, 'success');
-                    log(`訴狀已發送至郵箱 ${userEmail}`);
-                }, 2000);
-            });
-                        
-            // 顯示通知
-            function showNotification(message, type) {
-                notification.textContent = message;
-                notification.className = `notification ${type}`;
-                
-                if (type === 'success') {
-                    notification.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
-                } else if (type === 'error') {
-                    notification.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + message;
-                } else if (type === 'warning') {
-                    notification.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + message;
-                }
-                
-                notification.classList.add('show');
-                
-                setTimeout(function() {
-                    notification.classList.remove('show');
-                }, 5000);
-            }
-            
-            // 清除錯誤訊息
-            function clearErrors() {
-                document.querySelectorAll('.error-message').forEach(function(el) {
-                    el.style.display = 'none';
-                });
-                
-                document.querySelectorAll('.error').forEach(function(el) {
-                    el.classList.remove('error');
-                });
-            }
-            
-            // 顯示錯誤訊息
-            function showError(fieldId, message) {
-                const field = document.getElementById(fieldId);
-                const errorElement = document.getElementById(`${fieldId}-error`);
-                
-                if (field && errorElement) {
-                    field.classList.add('error');
-                    errorElement.textContent = message;
-                    errorElement.style.display = 'block';
-                }
-            }
-            
-            // 表單驗證
+            const caseProcessTextarea = document.getElementById('caseProcess');
+            const aiSummarizeButtonContainer = document.getElementById('aiSummarizeButtonContainer');
+            const estimatedTimeP = document.getElementById('estimatedTime');
+            const caseTitleInput = document.getElementById('caseTitle');
+            const caseTypeSelect = document.getElementById('caseType');
+            const caseTypeCustomInput = document.getElementById('caseTypeCustom');
+            const lawsTextarea = document.getElementById('laws');
+            const factsTextarea = document.getElementById('facts');
+            const precedentsTextarea = document.getElementById('precedents');
+            const courtNameSelect = document.getElementById('courtName'); // Main court dropdown
+            const debugVersionSpan = document.getElementById('debugVersion');
+
+
+            // --- AI Search Specific Elements ---
+            const aiSearchButtonContainer = document.getElementById('aiSearchButtonContainer');
+            const aiSearchInputArea = document.getElementById('aiSearchInputArea'); // Combined input area
+            // Court Keywords (for Search Query)
+            const courtSelect = document.getElementById('courtSelect');
+            const courtKeywordList = document.getElementById('courtKeywordList');
+            // General Keywords (for Search Query)
+            const keywordListDiv = document.getElementById('keywordList');
+            const addKeywordInput = document.getElementById('addKeywordInput');
+            const addKeywordBtn = document.getElementById('addKeywordBtn');
+            // Search Results Display & Filtering
+            const searchResultsListContainer = document.getElementById('searchResultsListContainer');
+            const resultsFilterContainer = document.getElementById('resultsFilterContainer'); // NEW: Filter Container
+            const resultsCourtFilterSelect = document.getElementById('resultsCourtFilterSelect'); // NEW: Filter Dropdown
+            const searchResultsItemsDiv = document.getElementById('searchResultsItems'); // NEW: Div for actual items
+
+
+            // --- Configuration ---
+            // IMPORTANT: Replace with your actual webhook URLs
+            const generateWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-document'; // <-- REPLACE
+            const aiOrganizerWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-doc-organizer'; // <-- REPLACE
+            const aiSearchWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-doc-search'; // <-- REPLACE
+            const LOCAL_STORAGE_KEY = 'wtlee328_lastLegalDocument_v2'; // Updated key if structure changes
+            const DEBUG_MODE = true; // Set to false for production
+            let aiSearchState = 'initial'; // 'initial' or 'keywords_ready'
+            let currentSearchResultsData = []; // NEW: To store full results for filtering
+
+
+            // --- Logging Utility ---
+            function log(message, type = 'info') { const timestamp = new Date().toLocaleTimeString(); const logPrefix = `[${type.toUpperCase()}][${timestamp}]`; if (DEBUG_MODE || type === 'error' || type === 'warning') { if (type === 'error') console.error(logPrefix, message); else if (type === 'warning') console.warn(logPrefix, message); else console.log(logPrefix, message); } if (debugPanel) { const logEntry = document.createElement('div'); logEntry.className = `log-entry ${type}`; logEntry.textContent = `[${timestamp}] ${String(message).substring(0, 300)}`; debugPanel.appendChild(logEntry); while (debugPanel.childNodes.length > 100) { debugPanel.removeChild(debugPanel.firstChild); } debugPanel.scrollTop = debugPanel.scrollHeight; } }
+
+            // --- UI Feedback Functions ---
+            function showNotification(message, type = 'info', duration = 5000) { if (!notification) return; notification.textContent = ''; notification.className = `notification ${type}`; const icon = document.createElement('i'); const iconMap = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' }; icon.className = `fas ${iconMap[type] || 'fa-info-circle'}`; notification.appendChild(icon); notification.appendChild(document.createTextNode(` ${message}`)); notification.classList.add('show'); setTimeout(() => { notification.classList.remove('show'); }, duration); }
+            function showLoading(message = "處理中，請稍候...", estimatedSeconds = null) { if (!loadingOverlay) return; loadingOverlay.querySelector('p:first-of-type').textContent = message; estimatedTimeP.textContent = estimatedSeconds ? `預計需時：約 ${estimatedSeconds} 秒` : ''; loadingOverlay.style.display = 'flex'; }
+            function hideLoading() { if (loadingOverlay) loadingOverlay.style.display = 'none'; }
+
+            // --- Form Validation & Error Handling ---
+            function clearErrors() { form.querySelectorAll('.error-message').forEach(el => el.style.display = 'none'); form.querySelectorAll('.error').forEach(el => el.classList.remove('error')); }
+            function showError(fieldId, message) { const field = document.getElementById(fieldId); const errorElement = document.getElementById(`${fieldId}-error`); if (field) field.classList.add('error'); if (errorElement) { errorElement.textContent = message; errorElement.style.display = 'block'; } else { log(`Error element not found for field: ${fieldId}`, 'warning'); } }
+            function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+            // --- Get Case Type Value ---
+            function getCaseTypeValue() { const selectedValue = caseTypeSelect.value; return selectedValue === 'custom' ? caseTypeCustomInput.value.trim() : selectedValue; }
+
+            // --- Form Validation ---
             function validateForm() {
-                let isValid = true;
-                clearErrors();
-                
-                // 必填欄位檢查
-                const requiredFields = [
-                    { id: 'caseType', message: '請選擇訴狀類型' },
-                    { id: 'plaintiff', message: '請填寫原告資料' },
-                    { id: 'defendant', message: '請填寫被告資料' },
-                    { id: 'caseTitle', message: '請填寫案件標題' },
-                    { id: 'facts', message: '請填寫案件事實' },
-                    { id: 'requests', message: '請填寫請求事項' },
-                    { id: 'evidence', message: '請填寫證據資料' },
-                    { id: 'email', message: '請填寫電子郵件' }
-                ];
-                
-                requiredFields.forEach(function(field) {
-                    const element = document.getElementById(field.id);
-                    if (!element.value.trim()) {
-                        showError(field.id, field.message);
-                        isValid = false;
-                    }
-                });
-                
-                // 案件事實至少3條
-                const facts = document.getElementById('facts').value.trim();
-                if (facts && facts.split('\n').filter(line => line.trim()).length < 3) {
-                    showError('facts', '請至少填寫3條案件事實');
-                    isValid = false;
-                }
-                
-                // 電子郵件格式驗證
-                const email = document.getElementById('email').value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (email && !emailRegex.test(email)) {
-                    showError('email', '請填寫有效的電子郵件格式');
-                    isValid = false;
-                }
-                
-                return isValid;
+                let isValid = true; clearErrors(); log('開始表單驗證', 'validation');
+                const requiredFields = [{ id: 'courtName', message: '請選擇法院名稱' }, { id: 'plaintiff', message: '請填寫原告資料' }, { id: 'defendant', message: '請填寫被告資料' }, { id: 'caseTitle', message: '請填寫案件案由' }, { id: 'requests', message: '請填寫訴之聲明 (請求事項)' }, { id: 'facts', message: '請填寫事實及理由' }, { id: 'evidence', message: '請填寫證據名稱及件數' }];
+                requiredFields.forEach(field => { const element = document.getElementById(field.id); if (!element || !element.value.trim()) { showError(field.id, field.message); log(`驗證失敗: ${field.id} - ${field.message}`, 'validation'); isValid = false; } });
+                const caseTypeVal = caseTypeSelect.value; const caseTypeCustomVal = caseTypeCustomInput.value.trim();
+                if (!caseTypeVal) { showError('caseType', '請選擇或輸入書狀類型'); log(`驗證失敗: caseType - 未選擇`, 'validation'); isValid = false; } else if (caseTypeVal === 'custom' && !caseTypeCustomVal) { showError('caseTypeCustom', '請輸入自訂書狀類型'); log(`驗證失敗: caseTypeCustom - 自訂類型為空`, 'validation'); isValid = false; }
+                const factsValue = document.getElementById('facts').value.trim(); if (factsValue && factsValue.split('\n').filter(line => line.trim()).length < 3) { showError('facts', '事實及理由請至少填寫3點'); log(`驗證失敗: facts - 未滿3點`, 'validation'); isValid = false; }
+                const emailValue = document.getElementById('email').value.trim(); if (emailValue && !validateEmail(emailValue)) { showError('email', '請填寫有效的電子郵件格式'); log(`驗證失敗: email - 格式錯誤`, 'validation'); isValid = false; }
+                log(`表單驗證結果: ${isValid ? '通過' : '失敗'}`, 'validation'); if (!isValid) { const firstError = form.querySelector('.error'); if (firstError) { firstError.scrollIntoView({ behavior: 'smooth', block: 'center' }); firstError.focus({ preventScroll: true }); } } return isValid;
             }
 
-            // 新增: 提取 action_input 內容
-            function extractActionInput(responseData) {
-                try {
-                    // 如果是字符串，嘗試解析為 JSON
-                    if (typeof responseData === 'string') {
-                        try {
-                            const parsedData = JSON.parse(responseData);
-                            if (parsedData.action === "Final Answer" && parsedData.action_input) {
-                                log("從 JSON 中提取 action_input", 'process');
-                                return parsedData.action_input;
-                            }
-                            
-                            // 檢查是否有 output 字段，且是否包含 Final Answer
-                            if (parsedData.output) {
-                                try {
-                                    const nestedOutput = JSON.parse(parsedData.output);
-                                    if (nestedOutput.action === "Final Answer" && nestedOutput.action_input) {
-                                        log("從嵌套 JSON.output 中提取 action_input", 'process');
-                                        return nestedOutput.action_input;
-                                    }
-                                } catch (e) {
-                                    // 如果 output 不是 JSON，直接返回 output
-                                    return parsedData.output;
-                                }
-                            }
-                            
-                            // 沒有找到 action_input，返回原始數據
-                            return responseData;
-                            
-                        } catch (e) {
-                            // 不是 JSON，直接返回原始文本
-                            return responseData;
-                        }
-                    } 
-                    
-                    // 如果是對象，直接檢查
-                    if (responseData && typeof responseData === 'object') {
-                        // 檢查是否有 action 和 action_input
-                        if (responseData.action === "Final Answer" && responseData.action_input) {
-                            log("從對象中提取 action_input", 'process');
-                            return responseData.action_input;
-                        }
-                        
-                        // 檢查是否有 output 字段
-                        if (responseData.output) {
-                            // 檢查 output 是否為字符串且包含 action_input
-                            if (typeof responseData.output === 'string') {
-                                try {
-                                    const nestedOutput = JSON.parse(responseData.output);
-                                    if (nestedOutput.action === "Final Answer" && nestedOutput.action_input) {
-                                        log("從對象的 output 中提取 action_input", 'process');
-                                        return nestedOutput.action_input;
-                                    }
-                                } catch (e) {
-                                    // output 不是 JSON，直接返回 output
-                                    return responseData.output;
-                                }
-                            } else if (typeof responseData.output === 'object') {
-                                // output 是對象，檢查是否有 action_input
-                                if (responseData.output.action === "Final Answer" && responseData.output.action_input) {
-                                    log("從對象的 output 對象中提取 action_input", 'process');
-                                    return responseData.output.action_input;
-                                }
-                            }
-                            
-                            // 沒有找到 action_input，但有 output
-                            return responseData.output;
-                        }
-                    }
-                    
-                    // 所有檢查都失敗，返回原始數據
-                    return responseData;
-                } catch (e) {
-                    console.error("提取 action_input 時出錯:", e);
-                    return responseData; // 出錯時返回原始數據
-                }
-            }
+            // --- Data Handling & Processing ---
+            function extractActionInput(responseData) { try { if (typeof responseData === 'string') { try { responseData = JSON.parse(responseData); } catch (e) { /* Ignore */ } } if (typeof responseData === 'object' && responseData !== null) { if (responseData.action === "Final Answer" && responseData.action_input) return responseData.action_input; if (responseData.output) return responseData.output; if (responseData.text) return responseData.text; } return typeof responseData === 'string' ? responseData : JSON.stringify(responseData, null, 2); } catch (e) { log(`提取 action_input/output/text 時出錯: ${e.message}`, 'error'); return responseData; } }
+            function processLegalDocumentText(data) { if (!data) return ''; let processedText = extractActionInput(data); if (typeof processedText === 'string') { processedText = processedText.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\t/g, '\t').replace(/\\\\/g, '\\'); processedText = processedText.replace(/^```(json|text|markdown)?\s*/gm, '').replace(/```\s*$/gm, ''); } return String(processedText || '').trim(); }
 
-            // 處理訴狀文本中的轉義字符
-            function processLegalDocumentText(text) {
-                if (!text) return '';
-                
-                // 首先嘗試提取 action_input
-                const extractedText = extractActionInput(text);
-                log("提取後的文本類型: " + typeof extractedText, 'debug');
-                
-                // 處理可能的 JSON 解析和轉義字符
-                let processedText = extractedText;
-                
-                // 如果是字符串，處理轉義字符
-                if (typeof processedText === 'string') {
-                    // 將 \n 轉換為實際換行符
-                    processedText = processedText
-                        .replace(/\\n/g, '\n')
-                        .replace(/\\"/g, '"')
-                        .replace(/\\t/g, '\t')
-                        .replace(/\\\\/g, '\\');
-                } else if (processedText && typeof processedText === 'object') {
-                    // 如果是對象，轉換為字符串
-                    processedText = JSON.stringify(processedText, null, 2);
-                }
-                
-                return processedText;
-            }
-            
-            // 創建按鈕函數 - 統一按鈕大小和樣式
-            function createButton(id, text, icon, color, clickHandler, isSubmit = false) {
-                const button = document.createElement('button');
-                button.id = id;
-                button.type = isSubmit ? 'submit' : 'button';
-                button.className = 'btn-uniform';
-                button.style.backgroundColor = color;
-                button.innerHTML = `<i class="fas fa-${icon}"></i> ${text}`;
-                if (clickHandler) {
-                    button.addEventListener('click', clickHandler);
-                }
-                return button;
-            }
-            
-            // 重構按鈕容器
+            // --- Local Storage ---
+            function saveDocumentToLocalStorage(documentText) { try { const dataToSave = { content: documentText, timestamp: new Date().toISOString() }; localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave)); log('訴狀已保存到本地存儲', 'storage'); } catch (e) { log(`無法保存到本地存儲: ${e.message}`, 'error'); showNotification('無法保存本次結果至瀏覽器暫存', 'warning'); } }
+            function loadDocumentFromLocalStorage() { try { const savedData = localStorage.getItem(LOCAL_STORAGE_KEY); if (savedData) { const parsedData = JSON.parse(savedData); if (parsedData?.content && parsedData.timestamp) return parsedData; } } catch (e) { log(`無法從本地存儲讀取或解析: ${e.message}`, 'error'); localStorage.removeItem(LOCAL_STORAGE_KEY); } return null; }
+
+            // --- Button Creation & Setup ---
+            function createButton(id, text, icon, styleClass, clickHandler, isSubmit = false, isUniform = true) { const button = document.createElement('button'); button.id = id; button.type = isSubmit ? 'submit' : 'button'; button.className = `btn ${styleClass}` + (isUniform ? ' btn-uniform' : ''); button.innerHTML = `<i class="fas fa-${icon}"></i> ${text}`; if (clickHandler) { button.addEventListener('click', clickHandler); } return button; }
             function setupButtons() {
-                // 清空按鈕容器
-                buttonsContainer.innerHTML = '';
-                
-                // 創建左側按鈕群組
-                const leftButtonGroup = document.createElement('div');
-                leftButtonGroup.style.display = 'flex';
-                leftButtonGroup.style.gap = '10px';
-                leftButtonGroup.style.flexWrap = 'wrap';
-                
-                // 創建示範按鈕
-                const demoButton = createButton('demoBtn', '示範', 'magic', '#6c757d', function() {
-                    document.getElementById('caseType').value = '民事起訴狀';
-                    document.getElementById('plaintiff').value = '林大明 住臺北市信義區忠孝東路五段7號';
-                    document.getElementById('plaintiffRepresentative').value = '';
-                    document.getElementById('defendant').value = '王小華 住臺中市西屯區文心路二段128號';
-                    document.getElementById('defendantRepresentative').value = '';
-                    document.getElementById('caseTitle').value = '請求給付貨款事件';
-                    document.getElementById('facts').value = '1. 原告於民國112年1月1日與被告簽訂汽車買賣契約\n2. 原告依約於112年1月15日交付汽車乙輛\n3. 被告依約應於112年2月1日支付價金新台幣50萬元\n4. 被告屆期未支付價金\n5. 原告於112年2月15日發函催告，被告仍未支付';
-                    document.getElementById('requests').value = '1. 被告應給付原告新台幣50萬元及自起訴狀送達之翌日起至清償日止，按年息5%計算之利息\n2. 訴訟費用由被告負擔';
-                    document.getElementById('evidence').value = '原證1: 買賣契約書影本1份\n原證2: 交付證明影本1份\n原證3: 催告函影本1份';
-                    document.getElementById('laws').value = '民法第153條（契約之成立）\n民法第199條（給付遲延）';
-                    document.getElementById('precedents').value = '最高法院98年度台上字第1689號判決';
-                    document.getElementById('email').value = 'wtlee328@gmail.com';
-                    document.getElementById('phone').value = '0912345678';
-                    clearErrors();
-                    log('已填入示範數據', 'ui');
-                    showNotification('已填入示範數據', 'success');
-                });
-                
-                // 創建測試按鈕
-                const testButton = createButton('testBtn', '測試', 'vial', '#28a745', function() {
-                    document.getElementById('caseType').value = '民事起訴狀';
-                    document.getElementById('plaintiff').value = '林大明 住臺北市信義區忠孝東路五段7號';
-                    document.getElementById('defendant').value = '王小華 住臺中市西屯區文心路二段128號';
-                    document.getElementById('caseTitle').value = '請求給付貨款事件';
-                    document.getElementById('facts').value = '1. 原告於民國112年1月1日與被告簽訂汽車買賣契約\n2. 原告依約於112年1月15日交付汽車乙輛\n3. 被告依約應於112年2月1日支付價金新台幣50萬元\n4. 被告屆期未支付價金\n5. 原告於112年2月15日發函催告，被告仍未支付';
-                    document.getElementById('requests').value = '1. 被告應給付原告新台幣50萬元及自起訴狀送達之翌日起至清償日止，按年息5%計算之利息\n2. 訴訟費用由被告負擔';
-                    document.getElementById('evidence').value = '原證1: 買賣契約書影本1份\n原證2: 交付證明影本1份\n原證3: 催告函影本1份';
-                    document.getElementById('laws').value = '民法第153條（契約之成立）\n民法第199條（給付遲延）';
-                    document.getElementById('precedents').value = '最高法院98年度台上字第1689號判決';
-                    document.getElementById('email').value = 'wtlee328@gmail.com';
-                    document.getElementById('phone').value = '0912345678';
-                    clearErrors();
-                    
-                    log('已填入示範數據，準備測試流程', 'test');
-                    showNotification('已填入示範數據，準備提交表單', 'success');
-                    
-                    // 模擬測試
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'flex';
-                        
-                        // 模擬處理時間
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                            
-                            // 測試數據 - 包含 action_input
-                            const testResponse = {
-                                "action": "Final Answer",
-                                "action_input": "民事起訴狀\n案　　號：114 年度 訴 字第 ____ 號\n股　　別：　____ 股\n\n原　　告　林大明\n　　　　　　住臺北市信義區忠孝東路五段7號\n\n被　　告　王小華\n　　　　　　住臺中市西屯區文心路二段128號\n\n為請求給付貨款事件，依法起訴事：\n\n　　　　　　聲　明\n一、被告應給付原告新臺幣伍拾萬元整，及自本起訴狀繕本送達翌日起至清償日止，按年息百分之五計算之利息。\n二、訴訟費用由被告負擔。\n三、如受不利判決，願供擔保請准宣告假執行。\n\n　　　　　　事實及理由\n一、緣原告與被告於民國112年1月1日簽訂汽車買賣契約（原證1），約定被告應於112年2月1日支付買賣價金新臺幣伍拾萬元整。原告業已依約於112年1月15日交付系爭車輛，並經被告簽收無誤（原證2）。\n\n二、詎被告屆期未依約履行給付價金義務，經原告於112年2月15日以存證信函催告履行（原證3），被告仍置之不理，迄今分文未付。依民法第367條規定，買受人對於出賣人有支付約定價金之義務，被告顯已違反契約義務。\n\n三、復按民法第229條第1項規定，給付有確定期限者，債務人自期限屆滿時起負遲延責任。本件被告遲延給付已逾一年餘，依同法第233條第1項規定，原告自得請求依法定利率計算之遲延利息。\n\n四、為此懇請 鈞院鑒核，賜判如訴之聲明，以維權益。\n\n　　　　　　證　據\n原證1：買賣契約書影本乙份\n原證2：車輛交付證明書影本乙份\n原證3：郵局存證信函暨回執影本乙份\n\n　　　　　　附　件\n一、本狀副本乙份\n二、證物清單乙紙\n\n謹　狀\n臺灣臺北地方法院民事庭　公鑒\n\n中華民國114年4月10日\n\n　　　　　　　　　　　　具狀人　原　告　林大明（簽名蓋章）"
-                            };
-                            
-                            // 提取 action_input 並處理
-                            const finalOutput = extractActionInput(testResponse);
-                            
-                            // 保存到本地存儲
-                            saveDocumentToLocalStorage(finalOutput);
-                            
-                            // 顯示訴狀內容
-                            documentContent.textContent = finalOutput;
-                            modal.style.display = 'block';
-                            showNotification('測試訴狀已生成！', 'success');
-                        }, 2000);
-                    }, 500);
-                });
-                
-                // 創建重置按鈕
-                const resetButton = createButton('resetBtn', '重置', 'undo', '#6c757d', function() {
-                    if (confirm('確定要重置表單嗎？所有填寫的內容將被清除。')) {
-                        form.reset();
-                        clearErrors();
-                        log('表單已重置');
-                        showNotification('表單已重置', 'info');
-                    }
-                });
-                
-                // 檢查是否有上次生成的訴狀，添加恢復按鈕
+                buttonsContainer.innerHTML = ''; const leftButtonGroup = document.createElement('div');
+                leftButtonGroup.appendChild(createButton('demoBtn', '示範', 'magic', 'secondary-btn', fillDemoData));
+                leftButtonGroup.appendChild(createButton('testBtn', '測試', 'vial', 'secondary-btn', runTest));
+                leftButtonGroup.appendChild(createButton('resetBtn', '清除', 'undo', 'secondary-btn', resetForm));
                 const savedData = loadDocumentFromLocalStorage();
-                if (savedData.document) {
-                    const timestamp = new Date(savedData.timestamp);
-                    const now = new Date();
-                    const diff = Math.floor((now - timestamp) / (1000 * 60)); // 分鐘差
-                    
-                    if (diff < 60) { // 如果不到60分鐘
-                        showNotification(`發現 ${diff} 分鐘前生成的訴狀`, 'info');
-                        log(`檢測到本地存儲的訴狀，生成於 ${diff} 分鐘前`, 'info');
-                        
-                        // 創建恢復按鈕
-                        const restoreButton = createButton('restoreBtn', '恢復', 'history', '#17a2b8', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            const processedText = processLegalDocumentText(savedData.document);
-                            documentContent.textContent = processedText;
-                            modal.style.display = 'block';
-                            log('已從本地存儲恢復訴狀', 'info');
-                            showNotification('已成功恢復先前的訴狀', 'success');
-                            loadingOverlay.style.display = 'none';
-                            
-                            return false;
-                        });
-                        
-                        // 添加恢復按鈕
-                        leftButtonGroup.appendChild(restoreButton);
+                if (savedData?.timestamp) {
+                    const timestamp = new Date(savedData.timestamp); const now = new Date(); const diffMinutes = Math.floor((now - timestamp) / (1000 * 60));
+                    if (diffMinutes < 60) { leftButtonGroup.appendChild(createButton('restoreBtn', '恢復', 'history', 'secondary-btn', () => { if (savedData.content) { documentContent.textContent = processLegalDocumentText(savedData.content); modal.style.display = 'block'; log(`從本地存儲恢復書狀 (生成於 ${diffMinutes} 分鐘前)`, 'storage'); showNotification('已恢復上次生成的書狀內容', 'success'); } else { showNotification('找不到上次的內容', 'warning'); } })); log(`發現 ${diffMinutes} 分鐘前生成的本地存儲數據`, 'info'); } else { localStorage.removeItem(LOCAL_STORAGE_KEY); log('已清除過期的本地存儲數據', 'info'); }
+                }
+                buttonsContainer.appendChild(leftButtonGroup); buttonsContainer.appendChild(createButton('submitBtn', '生成書狀', 'file-alt', 'btn-primary', null, true));
+                form.removeEventListener('submit', handleFormSubmit); form.addEventListener('submit', handleFormSubmit);
+            }
+
+            // --- Button Action Handlers ---
+            function fillDemoData() { log('正在填入示範數據...', 'ui'); clearErrors(); caseTypeSelect.value = '起訴狀'; handleCaseTypeChange(); document.getElementById('courtName').value = '臺灣臺北地方法院'; document.getElementById('plaintiff').value = '林大明\n住址：臺北市信義區市府路1號'; document.getElementById('defendant').value = '王小華\n住址：新北市板橋區縣民大道二段7號'; document.getElementById('caseTitle').value = '請求返還借款'; document.getElementById('caseProcess').value = '被告王小華於民國113年2月1日向原告林大明開口借款新台幣十萬元整，聲稱家中有急用，約定同年5月1日還款。原告基於多年情誼，於113年2月5日以現金交付予被告。然屆至清償期，被告並未還款。原告於6月1日以LINE訊息催討，被告已讀不回。後續多次以電話聯繫，被告均未接聽或掛斷。'; document.getElementById('requests').value = '一、被告應給付原告新台幣拾萬元整。\n二、及自起訴狀繕本送達翌日起至清償日止，按週年利率百分之五計算之利息。\n三、訴訟費用由被告負擔。\n四、原告願供擔保，請准宣告假執行。'; document.getElementById('facts').value = '一、被告王小華於民國113年2月1日因故向原告林大明借款新台幣（下同）拾萬元，約定清償日為同年5月1日，此有雙方LINE對話紀錄可證（詳參原證1）。\n二、原告遂於113年2月5日將現金拾萬元交付予被告收訖。\n三、詎料清償期屆至後，被告竟未依約返還借款，經原告於同年6月1日以通訊軟體催告（詳參原證1），被告均相應不理，顯已違約。\n四、爰依民法第478條等相關規定提起本訴，請求判如訴之聲明。'; document.getElementById('evidence').value = '原證1：LINE對話紀錄截圖乙份\n原證2：原告113年2月提款紀錄（佐證資金來源）'; document.getElementById('laws').value = '民法第474條\n民法第478條\n民法第229條第1項\n民法第233條第1項'; document.getElementById('precedents').value = '最高法院109年度台上字第1234號判決意旨參照\n臺灣高等法院110年度上字第567號判決'; document.getElementById('email').value = 'demo.user@example.com'; document.getElementById('phone').value = '0912-345678'; updateAiButtonState(); resetAiSearchUI(); showNotification('已填入示範數據', 'success'); }
+            function runTest() { fillDemoData(); log('開始本機測試流程...', 'test'); showNotification('使用示範數據進行本機測試...', 'info'); showLoading("模擬本機生成中...", 2); setTimeout(() => { hideLoading(); const testResponse = { output: `\n民事起訴狀（測試範本）\n案　　號： （法院自動編列）\n股　　別： （法院自動編列）\n\n原　　告　林大明\n　　　　　住址：臺北市信義區市府路1號\n\n被　　告　王小華\n　　　　　住址：新北市板橋區縣民大道二段7號\n\n為請求返還借款事件，依法起訴事：\n\n　　訴之聲明\n一、被告應給付原告新台幣拾萬元整。\n二、及自起訴狀繕本送達翌日起至清償日止，按週年利率百分之五計算之利息。\n三、訴訟費用由被告負擔。\n四、原告願供擔保，請准宣告假執行。\n\n　　事實及理由\n一、被告王小華於民國113年2月1日因故向原告林大明借款新台幣（下同）拾萬元，約定清償日為同年5月1日，此有雙方LINE對話紀錄可證（詳參原證1）。\n二、原告遂於113年2月5日將現金拾萬元交付予被告收訖。（原告可提出113年2月提款紀錄佐證資金流動，詳參原證2）\n三、詎料清償期屆至後，被告竟未依約返還借款，經原告於同年6月1日以通訊軟體催告（詳參原證1），被告均相應不理，顯已違約。\n四、爰依民法第478條、第229條第1項、第233條第1項等相關規定提起本訴，狀請 鈞院鑒核，賜判如訴之聲明，以維權益。\n\n　　證據\n原證1：LINE對話紀錄截圖乙份。\n原證2：原告113年2月提款紀錄影本乙份。\n\n　　相關判決\n最高法院109年度台上字第1234號判決意旨參照\n臺灣高等法院110年度上字第567號判決\n\n謹　状\n臺灣臺北地方法院民事庭　公鑒\n\n中華民國 ${new Date().getFullYear() - 1911} 年 ${new Date().getMonth() + 1} 月 ${new Date().getDate()} 日\n\n具狀人　林大明 （簽名或蓋章）\n` }; const finalOutput = processLegalDocumentText(testResponse); saveDocumentToLocalStorage(finalOutput); documentContent.textContent = finalOutput; modal.style.display = 'block'; log('本機測試書狀已生成並顯示', 'test'); showNotification('本機測試書狀已生成！', 'success'); setupButtons(); }, 1500); }
+            function resetForm() { if (confirm('您確定要清除所有已填寫的欄位嗎？')) { log('執行表單重置', 'ui'); form.reset(); clearErrors(); handleCaseTypeChange(); updateAiButtonState(); resetAiSearchUI(); showNotification('表單欄位已清除', 'info'); } }
+
+            // --- AI Summarize ---
+            function updateAiButtonState() { if (!caseProcessTextarea || !aiSummarizeButtonContainer) return; const processValue = caseProcessTextarea.value.trim(); aiSummarizeButtonContainer.innerHTML = ''; if (processValue) { const aiButton = createButton('aiSummarizeBtn', 'AI 統整', 'wand-magic-sparkles', 'btn-accent', triggerAiSummarize, false, false); aiSummarizeButtonContainer.appendChild(aiButton); } }
+            function populateFieldsFromAI(aiData) {
+                log("正在使用 AI 數據填充表單欄位", "ui");
+                const formatList = (items, prefixType = 'number') => { if (!Array.isArray(items) || items.length === 0) return ''; const prefixRegex = /^[a-z\d一二三四五六七八九十]+[、\.\)]\s*/i; return items.map((item, index) => { let currentItem = String(item).trim().replace(prefixRegex, "").replace(/^[a-z][\.\)]\s*/i, "").replace(/^[-•*]\s*/, "").trim(); let prefix = ''; if (prefixType === 'number') { const chineseNumerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']; prefix = (index < chineseNumerals.length ? chineseNumerals[index] : (index + 1)) + '、'; } else if (prefixType === 'bullet') { prefix = '● '; } else { prefix = `${index + 1}. `; } return currentItem ? prefix + currentItem : ''; }).filter(Boolean).join('\n'); };
+                const fields = { requests: { el: document.getElementById('requests'), data: aiData.claims, prefix: 'number' }, facts: { el: document.getElementById('facts'), data: aiData.facts, prefix: 'number' }, laws: { el: document.getElementById('laws'), data: aiData.laws, prefix: 'bullet' } };
+                Object.entries(fields).forEach(([key, config]) => { if (config.el) { config.el.value = config.data ? formatList(config.data, config.prefix) : ''; log(`填充 '${key}' ${config.data?.length || 0} 項`, "ui"); } else { log(`未找到 ${key} 欄位`, "warning"); } });
+                resetAiSearchUI(); // Reset search UI after populating from summarize
+            }
+            async function triggerAiSummarize() {
+                clearErrors();
+                const caseTypeVal = getCaseTypeValue(); if (!caseTypeVal) { showNotification('請選擇或輸入「書狀類型」', 'warning'); if (caseTypeSelect.value === 'custom') { showError('caseTypeCustom', '請輸入自訂書狀類型'); caseTypeCustomInput?.focus(); } else { showError('caseType', '請選擇書狀類型'); caseTypeSelect?.focus(); } return; }
+                const caseTitleText = caseTitleInput?.value.trim(); if (!caseTitleText) { showNotification('請填寫「案件案由」欄位', 'warning'); showError('caseTitle', 'AI 統整需要案件案由'); caseTitleInput?.focus(); return; }
+                const processText = caseProcessTextarea.value.trim(); if (!processText) { showNotification('請先在「案件詳細經過」欄位填寫內容', 'warning'); caseProcessTextarea.focus(); return; }
+                const aiButton = document.getElementById('aiSummarizeBtn'); let originalButtonHTML = ''; if (aiButton) { originalButtonHTML = aiButton.innerHTML; aiButton.disabled = true; aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 統整中...'; }
+                log('觸發 AI 統整，發送 類型+案由+經過 到 n8n...', 'request'); showNotification('正在請求 AI 統整，請稍候...', 'info');
+                try {
+                    const payload = { caseType: caseTypeVal, caseTitle: caseTitleText, caseProcess: processText }; log('發送到 AI Organizer Webhook 的 Payload:', 'debug'); if (DEBUG_MODE) console.log("AI Organizer Payload:", JSON.stringify(payload, null, 2));
+                    const response = await fetch(aiOrganizerWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-User-Id': window.debugInfo.user || 'unknown', 'X-Action': 'analyze-case-details' }, body: JSON.stringify(payload) }); log(`AI 統整回應狀態: ${response.status}`, 'response');
+                    if (!response.ok) { let errorBody = await response.text(); log(`AI 伺服器錯誤回應內容: ${errorBody}`, 'error'); let errorMessage = `AI 統整伺服器錯誤: ${response.status} ${response.statusText}.`; try { const errorJson = JSON.parse(errorBody); errorMessage += ` ${errorJson.message || ''}`; } catch (e) { errorMessage += ` ${errorBody.substring(0, 100)}${errorBody.length > 100 ? '...' : ''}`; } throw new Error(errorMessage); }
+                    const result = await response.json(); log('收到 AI 統整結果', 'response'); if (DEBUG_MODE) console.log('AI Organizer Result (Raw):', JSON.stringify(result, null, 2));
+                    let aiData = (Array.isArray(result) && result.length > 0) ? result[0] : (typeof result === 'object' && result !== null ? result : null);
+                    if (!aiData) { showNotification('AI 回應格式錯誤或為空', 'error', 8000); log(`AI 回應格式非預期: ${typeof result}`, 'error'); throw new Error('AI 回應格式無法識別'); }
+                    log('提取到的 AI 結構化數據:', 'response'); if (DEBUG_MODE) console.log('AI Data (Extracted):', JSON.stringify(aiData, null, 2));
+                    if (aiData.parseError) { showNotification(`AI 回應解析錯誤: ${aiData.parseError}`, 'error', 8000); log(`n8n 報告解析錯誤: ${aiData.parseError}`, 'error'); if (aiData.rawOutput) console.error("LLM Raw Output (解析失敗):", aiData.rawOutput); }
+                    if (aiData.warning) { showNotification(`AI 回應可能不完整: ${aiData.warning}`, 'warning', 7000); log(`n8n 報告結構警告: ${aiData.warning}`, 'warning'); }
+                    if (aiData.claims || aiData.facts || aiData.laws) { populateFieldsFromAI(aiData); showNotification('AI 分析完成，已填入相關欄位！', 'success'); } else { showNotification('AI 回應成功，但未提取到可填入的資料', 'warning'); log('AI 成功回應，但缺少預期鍵值', 'warning'); populateFieldsFromAI(aiData); }
+                } catch (error) { console.error('AI Summarize Fetch Error:', error); log(`AI 統整請求失敗: ${error.message}`, 'error'); showNotification(`AI 統整失敗：${error.message || '未知網路或伺服器錯誤'}`, 'error', 8000); showError('caseProcess', `AI 統整失敗`); }
+                finally { if (aiButton) { aiButton.disabled = false; aiButton.innerHTML = originalButtonHTML; } }
+            }
+
+            // --- AI Search - Keyword Handling Functions ---
+            // General Keywords
+            function addGeneralKeywordTag(keyword) {
+                if (!keywordListDiv) return;
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.textContent = keyword;
+                tag.dataset.keyword = keyword;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'keyword-delete';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.title = '移除此關鍵字';
+                deleteBtn.addEventListener('click', deleteGeneralKeywordHandler);
+                tag.appendChild(deleteBtn);
+                keywordListDiv.appendChild(tag);
+            }
+            function addKeywordHandler() {
+                if (!addKeywordInput || !keywordListDiv) return;
+                const newKeyword = addKeywordInput.value.trim();
+                if (newKeyword) {
+                    const existingKeywords = getCurrentKeywords();
+                    if (!existingKeywords.includes(newKeyword)) {
+                        addGeneralKeywordTag(newKeyword);
+                        addKeywordInput.value = '';
+                        log(`新增一般關鍵字: ${newKeyword}`, 'ui');
+                    } else {
+                        showNotification(`關鍵字 "${newKeyword}" 已存在`, 'warning');
                     }
                 }
-                
-                // 添加按鈕到左側群組
-                leftButtonGroup.appendChild(demoButton);
-                leftButtonGroup.appendChild(testButton);
-                leftButtonGroup.appendChild(resetButton);
-                
-                // 創建生成按鈕
-                const submitButton = createButton('submitBtn', '生成', 'file-alt', '#1a3b68', null, true);
-                
-                // 添加按鈕到容器
-                buttonsContainer.appendChild(leftButtonGroup);
-                buttonsContainer.appendChild(submitButton);
-                
-                // 添加表單提交事件
-                form.addEventListener('submit', handleFormSubmit);
+                addKeywordInput.focus();
             }
-            
-            // 表單提交處理函數
-            function handleFormSubmit(e) {
-                e.preventDefault();
-                
-                if (!validateForm()) {
-                    showNotification('請檢查表單並修正錯誤', 'error');
+            function deleteGeneralKeywordHandler(event) {
+                const tag = event.target.closest('.keyword-tag');
+                if (tag) {
+                    const keyword = tag.dataset.keyword;
+                    tag.remove();
+                    log(`移除一般關鍵字: ${keyword}`, 'ui');
+                }
+            }
+            function getCurrentKeywords() {
+                if (!keywordListDiv) return [];
+                const tags = keywordListDiv.querySelectorAll('.keyword-tag');
+                return Array.from(tags).map(tag => tag.dataset.keyword);
+            }
+
+            // Court Keywords (for Search Query)
+            function addCourtKeywordHandler() {
+                if (!courtSelect || !courtKeywordList) return;
+                const selectedCourtValue = courtSelect.value;
+                const selectedCourtText = courtSelect.options[courtSelect.selectedIndex].text;
+                if (!selectedCourtValue) return; // Ignore placeholder or empty selection
+
+                const existingCourts = getCurrentCourtKeywords();
+                if (existingCourts.includes(selectedCourtValue)) {
+                    showNotification(`法院 "${selectedCourtText}" 已加入篩選`, 'info');
+                } else {
+                    const tag = document.createElement('span');
+                    tag.className = 'court-keyword-tag';
+                    tag.textContent = selectedCourtText;
+                    tag.dataset.court = selectedCourtValue; // Store the value
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'keyword-delete';
+                    deleteBtn.innerHTML = '×';
+                    deleteBtn.title = '移除此法院篩選';
+                    deleteBtn.addEventListener('click', deleteCourtKeywordHandler);
+                    tag.appendChild(deleteBtn);
+                    courtKeywordList.appendChild(tag);
+                    log(`新增法院關鍵字: ${selectedCourtText} (Value: ${selectedCourtValue})`, 'ui');
+                }
+                courtSelect.value = ""; // Reset dropdown to placeholder
+            }
+            function deleteCourtKeywordHandler(event) {
+                const tag = event.target.closest('.court-keyword-tag');
+                if (tag) {
+                    const court = tag.dataset.court;
+                    const courtText = tag.textContent.replace('×', '').trim(); // Get text for logging
+                    tag.remove();
+                    log(`移除法院關鍵字: ${courtText} (Value: ${court})`, 'ui');
+                }
+            }
+            function getCurrentCourtKeywords() {
+                if (!courtKeywordList) return [];
+                const tags = courtKeywordList.querySelectorAll('.court-keyword-tag');
+                return Array.from(tags).map(tag => tag.dataset.court);
+            }
+
+            // --- Reset AI Search UI ---
+            function resetAiSearchUI() {
+                const aiButton = document.getElementById('aiSearchBtn');
+                if (aiButton) {
+                    aiButton.innerHTML = '<i class="fas fa-search"></i> AI 搜尋';
+                    aiButton.disabled = false;
+                }
+                if (aiSearchInputArea) { aiSearchInputArea.style.display = 'none'; }
+                if (keywordListDiv) keywordListDiv.innerHTML = '';
+                if (addKeywordInput) addKeywordInput.value = '';
+                if (courtKeywordList) courtKeywordList.innerHTML = '';
+                if (courtSelect) courtSelect.value = '';
+                // --- Reset Results Area ---
+                if (searchResultsListContainer) {
+                    searchResultsListContainer.style.display = 'none';
+                }
+                if (resultsFilterContainer) {
+                    resultsFilterContainer.style.display = 'none'; // Hide filter
+                }
+                if (resultsCourtFilterSelect) {
+                    resultsCourtFilterSelect.innerHTML = ''; // Clear filter options
+                    // Remove listener just in case (safer)
+                    resultsCourtFilterSelect.removeEventListener('change', applyResultsFilter);
+                }
+                if (searchResultsItemsDiv) {
+                    searchResultsItemsDiv.innerHTML = ''; // Clear result items
+                }
+                currentSearchResultsData = []; // Clear stored results
+                aiSearchState = 'initial';
+                log('AI 搜尋 UI 已重設 (輸入區隱藏, 關鍵字清除, 結果及篩選清除, 狀態重設)', 'ui');
+            }
+
+            // --- Helper function to add precedent to textarea ---
+            function addPrecedentToTextarea(buttonElement, precedentId) {
+                if (!precedentsTextarea) { log('無法找到 "相關判決" textarea', 'error'); showNotification('無法加入判決 (內部錯誤)', 'error'); return; }
+                const currentText = precedentsTextarea.value.trim();
+                const precedentRegex = new RegExp(`(^|\\n)${precedentId.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(\\s|$)`, 'm');
+                if (precedentRegex.test(currentText)) {
+                    showNotification(`"${precedentId}" 已存在於欄位中`, 'info');
+                    buttonElement.disabled = true;
+                    buttonElement.innerHTML = '✔ 已加入';
                     return;
                 }
-                
-                // 收集表單數據
-                const formData = {
-                    caseType: document.getElementById('caseType').value,
-                    caseNumber: document.getElementById('caseNumber').value,
-                    courtInfo: {
-                      name: document.getElementById('courtName').value,
-                      branch: document.getElementById('branchName').value
-                    },
-                    parties: {
-                      plaintiff: {
-                        info: document.getElementById('plaintiff').value,
-                        representative: document.getElementById('plaintiffRepresentative').value || "無"
-                      },
-                      defendant: {
-                        info: document.getElementById('defendant').value,
-                        representative: document.getElementById('defendantRepresentative').value || "無"
-                      }
-                    },
-                    case: {
-                      title: document.getElementById('caseTitle').value,
-                      facts: document.getElementById('facts').value.split('\n').filter(line => line.trim()),
-                      requests: document.getElementById('requests').value.split('\n').filter(line => line.trim()),
-                      evidence: document.getElementById('evidence').value.split('\n').filter(line => line.trim()),
-                      laws: document.getElementById('laws').value ? document.getElementById('laws').value.split('\n').filter(line => line.trim()) : [],
-                      precedents: document.getElementById('precedents').value ? document.getElementById('precedents').value.split('\n').filter(line => line.trim()) : []
-                    },
-                    contact: {
-                      email: document.getElementById('email').value,
-                      phone: document.getElementById('phone').value
-                    },
-                    metadata: {
-                      timestamp: "2025-04-10T17:24:38.000Z",
-                      system: "wtlee328-legal-doc-system",
-                      version: "1.0",
-                      created: "2025-04-10 17:24:38",
-                      user: "wtlee328"
-                    }
-                };
-                
-                // 顯示加載中覆蓋層
-                loadingOverlay.style.display = 'flex';
-                log('正在發送表單數據到 n8n...', 'request');
-                
-                // 調整剩餘時間顯示 
-                let secondsLeft = 45;
-                const timerInterval = setInterval(() => {
-                    secondsLeft--;
-                    document.getElementById('estimatedTime').textContent = `預計剩餘時間：${secondsLeft} 秒`;
-                    if (secondsLeft <= 0) {
-                        clearInterval(timerInterval);
-                    }
-                }, 1000);
-                
-                // 發送數據到 n8n webhook 並獲取真實數據
-                fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-User-Id': 'wtlee328',
-                        'X-Request-Time': '2025-04-10 17:24:38'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => {
-                    clearInterval(timerInterval);
-                    log(`收到 n8n 回應，狀態碼: ${response.status}`, 'response');
-                    
-                    if (!response.ok) {
-                        throw new Error(`伺服器回應錯誤: ${response.status} ${response.statusText}`);
-                    }
-                    
-                    return response.text().then(text => {
-                        // 記錄原始文本
-                        log("收到原始回應文本", 'debug');
-                        console.log("原始文本:", text);
-                        
-                        // 嘗試解析為 JSON
-                        try {
-                            return JSON.parse(text);
-                        } catch (e) {
-                            log("回應不是有效的 JSON，直接使用文本", 'debug');
-                            // 如果不能解析為 JSON，直接返回原始文本
-                            return text;
-                        }
-                    });
-                })
-                .then(data => {
-                    loadingOverlay.style.display = 'none';
-                    
-                    // 調試日誌 - 顯示所有接收到的數據
-                    log("從n8n收到真實回應數據", 'response');
-                    console.log(data);
-                    
-                    // 處理訴狀文本 - 提取 action_input 並處理轉義字符
-                    const finalOutput = processLegalDocumentText(data);
-                    log("處理完成，準備顯示", 'process');
-                    
-                    // 保存到本地存儲
-                    saveDocumentToLocalStorage(finalOutput);
-                    
-                    // 顯示訴狀內容
-                    documentContent.textContent = finalOutput;
-                    modal.style.display = 'block';
-                    showNotification('訴狀已成功生成！', 'success');
-                })
-                .catch(error => {
-                    loadingOverlay.style.display = 'none';
-                    clearInterval(timerInterval);
-                    console.error('Error:', error);
-                    log(`請求錯誤: ${error.message}`, 'error');
-                    showNotification('發生錯誤：' + error.message, 'error');
-                });
+                precedentsTextarea.value += (currentText ? '\n' : '') + precedentId;
+                log(`已將 "${precedentId}" 加入相關判決欄位`, 'ui');
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = '✔ 已加入';
+                precedentsTextarea.scrollTop = precedentsTextarea.scrollHeight;
             }
-            
-            // 初始化按鈕
+
+            // --- NEW: Function to Extract Court Name from Precedent ID ---
+            function extractCourtFromResultId(precedentId) {
+                if (!precedentId || typeof precedentId !== 'string') return '未知法院';
+                // Try to match common patterns (e.g., "臺灣高等法院 112...")
+                const match = precedentId.match(/^([^\s\d]+(\s?地方)?(高等)?(行政)?法院(\s?[\u4e00-\u9fa5]+分院)?)\s*\d+/);
+                if (match && match[1]) {
+                    return match[1].trim(); // Return the matched court name part
+                }
+                // Fallback: Take the part before the first number sequence or common keywords
+                const parts = precedentId.split(/(\s+\d+年度|\s+\d+\s+年度|\s+第\d+號)/);
+                if (parts && parts[0]) {
+                    // Basic cleanup for common suffixes if needed
+                    let potentialCourt = parts[0].trim().replace(/(民事|刑事|行政)判決$/, '').trim();
+                    return potentialCourt || '未知法院';
+                }
+                return '未知法院'; // Default if parsing fails
+            }
+
+
+            // --- NEW: Function to Populate Results Filter Dropdown ---
+            const courtLevelOrder = [
+                // Top Tier
+                "憲法法庭", "最高法院", "最高行政法院", "懲戒法院懲戒法庭", "懲戒法院職務法庭",
+                // High Courts & Specialized
+                "臺灣高等法院", "臺北高等行政法院", "臺中高等行政法院", "高雄高等行政法院", "智慧財產及商業法院",
+                // High Court Branches & Admin Local Branches
+                "臺灣高等法院 臺中分院", "臺灣高等法院 臺南分院", "臺灣高等法院 高雄分院", "臺灣高等法院 花蓮分院", "福建高等法院金門分院",
+                "臺北高等行政法院 地方庭", "臺中高等行政法院 地方庭", "高雄高等行政法院 地方庭",
+                // District Courts & Family Court
+                "臺灣臺北地方法院", "臺灣士林地方法院", "臺灣新北地方法院", "臺灣桃園地方法院", "臺灣新竹地方法院",
+                "臺灣苗栗地方法院", "臺灣臺中地方法院", "臺灣南投地方法院", "臺灣彰化地方法院", "臺灣雲林地方法院",
+                "臺灣嘉義地方法院", "臺灣臺南地方法院", "臺灣高雄地方法院", "臺灣橋頭地方法院", "臺灣屏東地方法院",
+                "臺灣臺東地方法院", "臺灣花蓮地方法院", "臺灣宜蘭地方法院", "臺灣基隆地方法院", "臺灣澎湖地方法院",
+                "福建金門地方法院", "福建連江地方法院", "臺灣高雄少年及家事法院",
+                // Others (Lower priority)
+                "司法院刑事補償法庭", "司法院--訴願決定", "臺灣高等法院--訴願決定",
+            ];
+
+            // --- MODIFIED: Function to Populate Results Filter Dropdown with Sorting ---
+            function populateResultsFilter(resultsData) {
+                if (!resultsCourtFilterSelect || !resultsFilterContainer) return;
+                resultsCourtFilterSelect.innerHTML = ''; // Clear existing options
+
+                if (!Array.isArray(resultsData) || resultsData.length === 0) {
+                    resultsFilterContainer.style.display = 'none';
+                    log('無搜尋結果，隱藏結果篩選器', 'ui');
+                    return;
+                }
+
+                const courtsSet = new Set(); // Use a Set for unique values
+                let hasUnknown = false;
+                resultsData.forEach(item => {
+                    if (item?.id) {
+                        const courtName = extractCourtFromResultId(item.id);
+                        if (courtName === '未知法院') {
+                            hasUnknown = true; // Track if we have unknown courts
+                        } else {
+                            courtsSet.add(courtName); // Add known courts to the set
+                        }
+                    }
+                });
+
+                // Convert Set to Array and Sort based on hierarchy
+                let sortedCourts = Array.from(courtsSet).sort((a, b) => {
+                    const indexA = courtLevelOrder.indexOf(a);
+                    const indexB = courtLevelOrder.indexOf(b);
+                    const effectiveIndexA = (indexA === -1) ? courtLevelOrder.length : indexA;
+                    const effectiveIndexB = (indexB === -1) ? courtLevelOrder.length : indexB;
+                    return effectiveIndexA - effectiveIndexB; // Sort by index (ascending)
+                });
+
+                // Add "All Courts" option at the beginning
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = `所有法院 (${resultsData.length}筆)`;
+                resultsCourtFilterSelect.appendChild(allOption);
+
+                // Add options for each sorted court found
+                sortedCourts.forEach(court => {
+                    const count = resultsData.filter(item => extractCourtFromResultId(item.id) === court).length;
+                    const option = document.createElement('option');
+                    option.value = court;
+                    option.textContent = `${court} (${count}筆)`;
+                    resultsCourtFilterSelect.appendChild(option);
+                });
+
+                // Add "未知法院" option at the end if any were found
+                if (hasUnknown) {
+                    const unknownCount = resultsData.filter(item => extractCourtFromResultId(item.id) === '未知法院').length;
+                    const unknownOption = document.createElement('option');
+                    unknownOption.value = '未知法院';
+                    unknownOption.textContent = `未知法院 (${unknownCount}筆)`;
+                    resultsCourtFilterSelect.appendChild(unknownOption);
+                }
+
+
+                if (sortedCourts.length > 0 || hasUnknown) { // Show filter if known or unknown courts were found
+                    resultsFilterContainer.style.display = 'flex';
+                    log(`結果篩選器已填充並按層級排序 (${sortedCourts.length} 個已知法院)`, 'ui');
+                } else {
+                    resultsFilterContainer.style.display = 'none';
+                    log('結果中未識別出法院名稱，隱藏篩選器', 'ui');
+                }
+            }
+
+            // --- NEW: Function to Apply the Results Filter ---
+            function applyResultsFilter() {
+                if (!resultsCourtFilterSelect || !searchResultsItemsDiv) return;
+                const selectedCourt = resultsCourtFilterSelect.value;
+                const resultItems = searchResultsItemsDiv.querySelectorAll('.search-result-item');
+                let visibleCount = 0;
+
+                log(`套用結果篩選：選擇了 "${selectedCourt}"`, 'ui');
+
+                resultItems.forEach(item => {
+                    const itemCourt = item.dataset.court; // Get court from data attribute
+                    if (selectedCourt === 'all' || itemCourt === selectedCourt) {
+                        // item.style.display = 'flex'; // Show item (Alternative)
+                        item.classList.remove('hidden'); // Use class
+                        visibleCount++;
+                    } else {
+                        // item.style.display = 'none'; // Hide item (Alternative)
+                        item.classList.add('hidden');
+                    }
+                });
+                log(`篩選後顯示 ${visibleCount} / ${resultItems.length} 筆結果`, 'ui');
+
+                // Show "no results" message specifically for the filtered view if needed
+                const noResultsMsg = searchResultsItemsDiv.querySelector('.no-results-message');
+                if (noResultsMsg) noResultsMsg.remove(); // Remove previous message
+
+                if (visibleCount === 0 && selectedCourt !== 'all') {
+                    const msg = document.createElement('p');
+                    msg.className = 'no-results-message';
+                    msg.textContent = `在 "${selectedCourt}" 中未找到符合條件的判決。`;
+                    searchResultsItemsDiv.appendChild(msg);
+                }
+            }
+
+            // --- NEW: Function to Display Search Results Items ---
+            function displaySearchResults(resultsData) {
+                if (!searchResultsItemsDiv) return;
+                searchResultsItemsDiv.innerHTML = ''; // Clear previous items specifically in this div
+
+                const addedPrecedents = precedentsTextarea.value.trim(); // Get current precedents
+
+                if (resultsData.length === 0) {
+                    const noResultsMsg = document.createElement('p');
+                    noResultsMsg.className = 'no-results-message';
+                    noResultsMsg.textContent = '未找到相關判決結果。';
+                    searchResultsItemsDiv.appendChild(noResultsMsg);
+                    log('顯示 "未找到結果" 訊息', 'ui');
+                    return; // Nothing more to display
+                }
+
+
+                resultsData.forEach(item => {
+                    if (item?.id && typeof item.id === 'string' && item.url && typeof item.url === 'string') {
+                        const courtName = extractCourtFromResultId(item.id); // Extract court
+
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'search-result-item';
+                        itemDiv.dataset.court = courtName; // Add data attribute for filtering
+
+                        const link = document.createElement('a');
+                        link.href = item.url;
+                        link.textContent = item.id;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.title = `開啟判決連結：${item.id} (${courtName})`; // Add court to title
+
+                        const addButton = document.createElement('button');
+                        addButton.type = 'button';
+                        addButton.className = 'btn btn-add-precedent';
+                        addButton.innerHTML = '<i class="fas fa-plus"></i> 加入';
+                        addButton.title = `將此判決加入上方欄位`;
+
+                        const precedentRegex = new RegExp(`(^|\\n)${item.id.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(\\s|$)`, 'm');
+                        if (precedentRegex.test(addedPrecedents)) {
+                            addButton.disabled = true;
+                            addButton.innerHTML = '✔ 已加入';
+                        } else {
+                            addButton.addEventListener('click', () => addPrecedentToTextarea(addButton, item.id));
+                        }
+
+                        itemDiv.appendChild(link);
+                        itemDiv.appendChild(addButton);
+                        searchResultsItemsDiv.appendChild(itemDiv); // Append to the specific items div
+                    } else {
+                        log('跳過格式錯誤的搜尋結果項目', 'warning');
+                        if (DEBUG_MODE) console.warn("Skipped item:", item);
+                    }
+                });
+                log(`已顯示 ${resultsData.length} 筆搜尋結果項目`, 'ui');
+            }
+
+
+            // --- AI Search Function (MODIFIED to send court filters) ---
+            async function triggerAiSearch() {
+                clearErrors();
+                const aiButton = document.getElementById('aiSearchBtn');
+                if (!aiButton || !aiSearchInputArea) return;
+
+                // --- Always clear previous results display and reset filter ---
+                if (searchResultsListContainer) {
+                    searchResultsListContainer.style.display = 'none'; // Hide container initially
+                }
+                if (searchResultsItemsDiv) {
+                    searchResultsItemsDiv.innerHTML = ''; // Clear item display area
+                }
+                if (resultsFilterContainer) {
+                    resultsFilterContainer.style.display = 'none'; // Hide filter
+                }
+                if (resultsCourtFilterSelect) {
+                    resultsCourtFilterSelect.innerHTML = ''; // Clear filter options
+                    resultsCourtFilterSelect.removeEventListener('change', applyResultsFilter); // Remove listener
+                }
+                currentSearchResultsData = []; // Clear stored data
+
+
+                // --- Step 1: Show Input Area & Prepare Keywords (if initial state) ---
+                if (aiSearchState === 'initial') {
+                    log('AI 搜尋 - 步驟 1: 顯示輸入區並準備關鍵字', 'ui');
+                    aiSearchInputArea.style.display = 'block';
+
+                    const caseTitleText = caseTitleInput?.value.trim();
+                    const lawsValue = lawsTextarea?.value.trim();
+
+                    if (getCurrentKeywords().length === 0) {
+                        let generalKeywords = [];
+                        if (caseTitleText) { generalKeywords = generalKeywords.concat(caseTitleText.split(/[\s,、，；;]+/).map(kw => kw.trim()).filter(kw => kw.length > 1)); }
+                        if (lawsValue) { const lawPattern = /^[\s•●-]*([\u4e00-\u9fa5]+法\s?第\s?\d+\s?條(\s?第\s?\d+\s?項)?)/; lawsValue.split('\n').forEach(line => { const match = line.trim().match(lawPattern); if (match?.[1]) { generalKeywords.push(match[1].replace(/\s/g, '')); } }); }
+                        generalKeywords = [...new Set(generalKeywords)].slice(0, 5);
+                        if (generalKeywords.length > 0) {
+                            keywordListDiv.innerHTML = '';
+                            generalKeywords.forEach(kw => addGeneralKeywordTag(kw));
+                            log(`自動提取 ${generalKeywords.length} 個一般關鍵字`, 'ui');
+                        } else { log('未自動提取一般關鍵字，請手動輸入或選擇法院', 'ui'); }
+                    } else { log('一般關鍵字已存在，跳過自動提取', 'ui'); }
+
+                    aiButton.innerHTML = '<i class="fas fa-paper-plane"></i> 送出搜尋';
+                    aiSearchState = 'keywords_ready';
+                    log('AI 搜尋進入 "keywords_ready" 狀態，輸入區已顯示', 'ui');
+                    return; // Wait for second click
+                }
+
+                // --- Step 2: Collect Keywords & Send Request ---
+                log('AI 搜尋 - 步驟 2: 收集關鍵字並準備送出', 'request');
+                const currentGeneralKeywords = getCurrentKeywords();
+                const currentCourtKeywords = getCurrentCourtKeywords(); // Courts selected in the UI (array of values)
+                const factsText = factsTextarea?.value.trim();
+
+                if (currentGeneralKeywords.length === 0 && currentCourtKeywords.length === 0) {
+                    showNotification('請至少輸入一般關鍵字或選擇法院篩選條件', 'warning');
+                    addKeywordInput?.focus();
+                    return;
+                }
+
+                // Construct the text search string (might include court names if user added them there)
+                let keywordsString = "";
+                const generalPart = currentGeneralKeywords.join('&');
+                let courtPartProcessed = "";
+                // Note: This part adds court names to the *text search* string, which is separate from the new filter array.
+                if (currentCourtKeywords.length > 0) {
+                    const courtSearchTerms = currentCourtKeywords.map(courtValue => {
+                        // Find the text corresponding to the value (best effort)
+                        const courtOption = Array.from(courtSelect.options).find(opt => opt.value === courtValue);
+                        const courtNameText = courtOption ? courtOption.text : courtValue; // Fallback to value if text not found
+                        return `${courtNameText}民事裁定`; // Example format, adjust as needed for your search backend
+                    });
+                    courtPartProcessed = `(${courtSearchTerms.join('+')})`;
+                }
+                if (generalPart && courtPartProcessed) { keywordsString = `${generalPart}&${courtPartProcessed}`; }
+                else if (generalPart) { keywordsString = generalPart; }
+                else if (courtPartProcessed) { keywordsString = courtPartProcessed; }
+
+                log(`組合後的文字搜尋字串: ${keywordsString}`, 'debug');
+                log(`要發送的法院篩選條件 (值): ${currentCourtKeywords.join(', ') || '無'}`, 'debug'); // Log the court values being sent
+
+                let originalButtonHTML = aiButton.innerHTML;
+                aiButton.disabled = true;
+                aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 搜尋中...';
+                showNotification('正在請求 AI 搜尋相關判決...', 'info');
+
+                try {
+                    // *** MODIFIED PAYLOAD: Added courtFilters ***
+                    const payload = {
+                        action: 'search_precedents_keywords_v2',
+                        keywords: keywordsString, // Text search string
+                        factsSummary: factsText ? factsText.substring(0, 800) : null,
+                        courtFilters: currentCourtKeywords // Array of selected court *values*
+                    };
+                    log('發送到 AI Search Webhook 的 Payload:', 'request'); // Changed level to 'request' for visibility
+                    if (DEBUG_MODE) console.log("AI Search Payload:", JSON.stringify(payload, null, 2));
+
+                    const response = await fetch(aiSearchWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-User-Id': window.debugInfo.user || 'unknown', 'X-Action': payload.action }, body: JSON.stringify(payload) });
+                    log(`AI 搜尋回應狀態: ${response.status}`, 'response');
+
+                    if (!response.ok) {
+                        let errorBody = await response.text(); log(`AI 搜尋伺服器錯誤回應內容: ${errorBody}`, 'error');
+                        let errorMessage = `AI 搜尋伺服器錯誤: ${response.status} ${response.statusText}.`; try { const errorJson = JSON.parse(errorBody); errorMessage += ` ${errorJson.message || ''}`; } catch (e) { errorMessage += ` ${errorBody.substring(0, 100)}${errorBody.length > 100 ? '...' : ''}`; } throw new Error(errorMessage);
+                    }
+
+                    const result = await response.json();
+                    log('收到 AI 搜尋結果 (已解析)', 'response'); if (DEBUG_MODE) console.log('AI Search Result (Parsed):', JSON.stringify(result, null, 2));
+
+                    // --- Process results: Store, Populate Filter, Display Items ---
+                    if (searchResultsListContainer) {
+                        currentSearchResultsData = (typeof result === 'object' && result !== null && Array.isArray(result.data)) ? result.data : []; // Store full results
+                        log(`收到 ${currentSearchResultsData.length} 筆判決結果，準備顯示列表與篩選器`, 'process');
+
+                        // 1. Populate the filter based on the full results
+                        populateResultsFilter(currentSearchResultsData);
+
+                        // 2. Display all result items initially
+                        displaySearchResults(currentSearchResultsData);
+
+                        // 3. Add event listener to the filter dropdown
+                        if (resultsCourtFilterSelect && currentSearchResultsData.length > 0) { // Only add listener if there are results/filter options
+                            resultsCourtFilterSelect.addEventListener('change', applyResultsFilter);
+                        }
+
+                        // 4. Show the main results container
+                        searchResultsListContainer.style.display = 'block';
+
+                        if (currentSearchResultsData.length > 0) {
+                            showNotification(`找到 ${currentSearchResultsData.length} 筆相關判決，請選擇加入或篩選`, 'success');
+                        } else {
+                            showNotification('AI 未找到相關判決結果', 'info');
+                        }
+
+                    } else { log('無法找到搜尋結果列表容器 (searchResultsListContainer)', 'error'); showNotification('無法顯示搜尋結果 (內部錯誤)', 'error'); }
+                } catch (error) {
+                    console.error('AI Search Fetch/Process Error:', error); log(`AI 搜尋請求或處理失敗: ${error.message}`, 'error'); showNotification(`AI 搜尋失敗：${error.message || '未知網路或伺服器錯誤'}`, 'error', 8000);
+                    // Ensure results area is hidden on error
+                    if (searchResultsListContainer) searchResultsListContainer.style.display = 'none';
+                    if (resultsFilterContainer) resultsFilterContainer.style.display = 'none';
+                    if (searchResultsItemsDiv) searchResultsItemsDiv.innerHTML = '';
+                    currentSearchResultsData = []; // Clear data on error too
+
+                } finally {
+                    if (aiButton) {
+                        aiButton.disabled = false;
+                        aiButton.innerHTML = '<i class="fas fa-paper-plane"></i> 送出搜尋'; // Keep ready state button text
+                    }
+                    log('AI 搜尋完成，按鈕已重設，結果列表/篩選器已(或嘗試)顯示', 'ui');
+                }
+
+            } // End of triggerAiSearch
+
+
+            // --- Main Form Submission Handler ---
+            function handleFormSubmit(e) {
+                e.preventDefault(); log('接收到表單提交請求', 'ui'); if (!validateForm()) { showNotification('提交失敗，請檢查表單紅色標示的欄位', 'error'); return; }
+                const finalCaseType = getCaseTypeValue(); log(`提交的書狀類型: ${finalCaseType}`, 'data');
+                const formData = { caseType: finalCaseType, caseNumber: document.getElementById('caseNumber').value || null, courtInfo: { name: document.getElementById('courtName').value, branch: document.getElementById('branchName').value || null }, parties: { plaintiff: { info: document.getElementById('plaintiff').value, representative: document.getElementById('plaintiffRepresentative').value || null }, defendant: { info: document.getElementById('defendant').value, representative: document.getElementById('defendantRepresentative').value || null } }, caseDetails: { title: document.getElementById('caseTitle').value, requests: document.getElementById('requests').value.split('\n').filter(Boolean), factsAndReasons: document.getElementById('facts').value, caseProcess: document.getElementById('caseProcess').value || null, evidence: document.getElementById('evidence').value.split('\n').filter(Boolean), laws: document.getElementById('laws').value ? document.getElementById('laws').value.split('\n').filter(Boolean) : [], precedents: document.getElementById('precedents').value ? document.getElementById('precedents').value.split('\n').filter(Boolean) : [] }, contact: { email: document.getElementById('email').value || null, phone: document.getElementById('phone').value || null }, metadata: { submissionTimestamp: new Date().toISOString(), formVersion: window.debugInfo.version || 'unknown', userId: window.debugInfo.user || 'unknown', system: "wtlee328-legal-doc-gen" } };
+                log('表單數據已收集完畢', 'data'); if (DEBUG_MODE) console.log("準備發送的數據:", JSON.stringify(formData, null, 2));
+                showLoading("正在生成書狀，請稍候...", 45); let secondsLeft = 45; const timerInterval = setInterval(() => { secondsLeft--; if (secondsLeft > 0) { estimatedTimeP.textContent = `預計剩餘： ${secondsLeft} 秒`; } else { estimatedTimeP.textContent = `仍在處理中，請耐心等候...`; clearInterval(timerInterval); } }, 1000);
+                fetch(generateWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Request-ID': `gen-${Date.now()}-${Math.random().toString(16).substring(2, 8)}` }, body: JSON.stringify(formData) })
+                    .then(async response => { clearInterval(timerInterval); log(`收到 n8n (生成) 回應，狀態: ${response.status}`, 'response'); if (!response.ok) { let errorBody = await response.text(); log(`伺服器錯誤回應內容: ${errorBody}`, 'error'); throw new Error(`伺服器錯誤: ${response.status} ${response.statusText}. ${errorBody || '無詳細錯誤訊息'}`); } return response.text(); })
+                    .then(text => { log("收到原始生成回應文本", 'debug'); if (DEBUG_MODE) console.log("Raw Response Text:", text); let data; try { data = JSON.parse(text); } catch (e) { log("生成回應不是有效的 JSON，將直接使用收到的文本", 'debug'); data = text; } return data; })
+                    .then(data => { hideLoading(); log("收到最終生成回應數據", 'response'); if (DEBUG_MODE) console.log("Processed Response Data:", data); const finalOutput = processLegalDocumentText(data); log("最終書狀文本已處理完成", 'process'); if (DEBUG_MODE) console.log("Final Output for Display:", finalOutput); saveDocumentToLocalStorage(finalOutput); documentContent.textContent = finalOutput || "未能生成內容，請檢查回應。"; modal.style.display = 'block'; showNotification('訴狀已成功生成！', 'success'); setupButtons(); })
+                    .catch(error => { clearInterval(timerInterval); hideLoading(); console.error('Form Submission/Generation Error:', error); log(`生成請求失敗: ${error.message}`, 'error'); showNotification(`生成書狀時發生錯誤：${error.message || '未知錯誤'}`, 'error', 8000); });
+            }
+
+            // --- Modal and Document Actions ---
+            if (closeModalBtn) { closeModalBtn.addEventListener('click', () => modal.style.display = 'none'); }
+            window.addEventListener('click', (event) => { if (event.target === modal) { modal.style.display = 'none'; } });
+            window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.style.display === 'block') { modal.style.display = 'none'; } });
+            if (copyBtn) { copyBtn.addEventListener('click', () => { const textToCopy = documentContent.textContent; if (!textToCopy) { showNotification('沒有內容可複製', 'warning'); return; } navigator.clipboard.writeText(textToCopy).then(() => { showNotification('書狀內容已複製到剪貼簿', 'success'); log('內容已複製', 'action'); }).catch(err => { showNotification('複製失敗，瀏覽器可能不支援或未授權', 'error'); log(`複製失敗: ${err.message}`, 'error'); }); }); }
+            if (printBtn) { printBtn.addEventListener('click', () => { log('觸發列印', 'action'); modal.classList.add('printing'); window.print(); setTimeout(() => modal.classList.remove('printing'), 500); }); }
+            if (downloadBtn) { downloadBtn.addEventListener('click', () => { try { const text = documentContent.textContent; if (!text) { showNotification('沒有內容可下載', 'warning'); return; } const caseType = getCaseTypeValue() || '書狀'; const today = new Date().toISOString().slice(0, 10); const filename = `${caseType}_${today}.txt`; const blob = new Blob([text], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); showNotification(`已下載文件：${filename}`, 'success'); log(`書狀已下載為 ${filename}`, 'action'); } catch (e) { log(`下載失敗: ${e.message}`, 'error'); showNotification('下載文件時發生錯誤', 'error'); } }); }
+            if (emailBtn) { emailBtn.addEventListener('click', () => { const userEmail = document.getElementById('email').value; const docText = documentContent.textContent; if (!userEmail || !validateEmail(userEmail)) { showNotification('請先在主表單填寫有效的電子郵件地址才能寄送', 'warning'); showError('email', '若要寄送，請填寫有效的電子郵件'); return; } if (!docText) { showNotification('沒有訴狀內容可寄送', 'warning'); return; } log(`準備模擬發送郵件至 ${userEmail}`, 'action'); showNotification(`即將模擬發送書狀至：${userEmail}`, 'info'); emailBtn.disabled = true; emailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 寄送中...'; setTimeout(() => { emailBtn.disabled = false; emailBtn.innerHTML = '<i class="fas fa-envelope"></i> 寄送Email'; showNotification(`書狀已「模擬」發送至您的信箱：${userEmail}`, 'success'); log(`模擬郵件已發送至 ${userEmail}`, 'action'); }, 2500); }); }
+
+            // --- Populate Court Select Dropdown (for Search Query) ---
+            function populateCourtDropdowns() {
+                if (!courtNameSelect || !courtSelect) {
+                    log("無法找到法院下拉選單元素", "error");
+                    return;
+                }
+                const courtSelectPlaceholder = courtSelect.querySelector('option[disabled]');
+                courtSelect.innerHTML = '';
+                if (courtSelectPlaceholder) courtSelect.appendChild(courtSelectPlaceholder);
+                Array.from(courtNameSelect.options).forEach(option => {
+                    if (option.value && option.value !== '其他法院') { // Exclude placeholder and 'other'
+                        const newOptionCourtSelect = option.cloneNode(true);
+                        courtSelect.appendChild(newOptionCourtSelect);
+                    }
+                });
+                log("法院搜尋(Query)下拉選單已填充", "init");
+            }
+
+
+            // --- Initialization ---
+            if (debugVersionSpan) {
+                debugVersionSpan.textContent = window.debugInfo.version || 'unknown';
+            }
+            log(`系統初始化 - v${window.debugInfo.version}`, 'init');
             setupButtons();
-            
-            // 初始日誌
-            log("系統已初始化，用戶：wtlee328，時間：2025-04-10 17:24:38", 'init');
-            log("等待用戶操作...", 'init');
-            
-            // 添加快速鍵提示
-            showNotification('按下 Alt+D 可以顯示/隱藏調試面板', 'info');
-        });
+            populateCourtDropdowns(); // Populate the court filter dropdown for the *search query*
+
+            if (aiSearchButtonContainer) {
+                const aiSearchButton = createButton('aiSearchBtn', 'AI 搜尋', 'search', 'btn-accent', triggerAiSearch, false, false);
+                aiSearchButtonContainer.appendChild(aiSearchButton);
+                log('AI 搜尋按鈕已添加到其容器中', 'init');
+            } else { log('未找到 AI 搜尋按鈕容器 (aiSearchButtonContainer)', 'warning'); }
+
+            // Event Listeners for AI Search Keywords (Query)
+            if (addKeywordBtn) { addKeywordBtn.addEventListener('click', addKeywordHandler); }
+            if (addKeywordInput) { addKeywordInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); addKeywordHandler(); } }); }
+            if (courtSelect) { courtSelect.addEventListener('change', addCourtKeywordHandler); }
+
+            // Other Event Listeners
+            if (caseTypeSelect) { caseTypeSelect.addEventListener('change', handleCaseTypeChange); handleCaseTypeChange(); }
+            if (caseProcessTextarea) { caseProcessTextarea.addEventListener('input', updateAiButtonState); updateAiButtonState(); } else { log('未找到案件經過欄位 (caseProcess textarea)', 'warning'); }
+
+            // Reset AI Search UI if related primary inputs change
+            if (caseTitleInput) { caseTitleInput.addEventListener('input', resetAiSearchUI); }
+            if (lawsTextarea) { lawsTextarea.addEventListener('input', resetAiSearchUI); }
+            if (factsTextarea) { factsTextarea.addEventListener('input', resetAiSearchUI); }
+
+            document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'd') { debugPanel.classList.toggle('active'); log(`調試面板 ${debugPanel.classList.contains('active') ? '開啟' : '關閉'}`, 'ui'); e.preventDefault(); } });
+            if (DEBUG_MODE) showNotification('按下 Alt+D 可顯示/隱藏調試面板', 'info', 7000);
+            resetAiSearchUI(); // Initial reset
+
+            // --- Function to handle case type dropdown change ---
+            function handleCaseTypeChange() { if (!caseTypeSelect || !caseTypeCustomInput) return; const customError = document.getElementById('caseTypeCustom-error'); const selectError = document.getElementById('caseType-error'); if (caseTypeSelect.value === 'custom') { caseTypeCustomInput.style.display = 'block'; selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } else { caseTypeCustomInput.style.display = 'none'; caseTypeCustomInput.value = ''; customError.style.display = 'none'; caseTypeCustomInput.classList.remove('error'); if (caseTypeSelect.value !== '') { selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } } }
+
+
+
+
+        }); // End DOMContentLoaded
     </script>
 </body>
+
 </html>
