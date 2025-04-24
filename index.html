@@ -27,24 +27,27 @@
     <style>
         /* --- Base Styles --- */
         :root {
-            --primary-color: #1a3b68;
-            --secondary-color: #f8f9fa;
-            --accent-color: #d4a760;
-            /* Gold */
+            /* Updated Color Palette based on Logo */
+            --primary-color: #6A4AC5; /* Medium Purple */
+            --secondary-color: #f8f9fa; /* Light Grey - Keep for neutrality */
+            --accent-color: #FDB813;   /* Logo Yellow/Orange */
             --text-color: #333;
             --border-color: #ddd;
             --success-color: #28a745;
             --error-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            /* Info blue */
-            --added-color: #6c757d;
-            /* Color for 'added' button */
-            --court-tag-bg: var(--info-color);
-            /* Specific color for court tags */
+            --warning-color: #ffc107; /* Standard warning yellow */
+            --info-color: #17a2b8;     /* Cyan - Matches logo blue nicely */
+            --added-color: #6c757d; /* Color for 'added' button */
+
+            /* Gradient Colors (for reference/potential use) */
+            --gradient-blue: #A0D2EB; /* Lighter blue */
+            --gradient-purple: #A076F9; /* Lighter purple */
+            --gradient-yellow: #FDD835; /* Lighter yellow */
+
+            /* Tag Colors */
+            --court-tag-bg: var(--info-color); /* Use Info Cyan for Court Tags */
             --court-tag-text: white;
-            --general-tag-bg: var(--primary-color);
-            /* Color for general tags */
+            --general-tag-bg: var(--primary-color); /* Use Primary Purple for General Tags */
             --general-tag-text: white;
         }
 
@@ -69,19 +72,34 @@
             padding: 20px;
         }
 
+        /* --- UPDATED HEADER --- */
         header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
+            /* background-color: var(--primary-color); Old */
+            background: linear-gradient(135deg, var(--gradient-blue), var(--gradient-purple), var(--gradient-yellow)); /* New Gradient */
+            color: var(--text-color); /* Dark text on light gradient */
+            padding: 1.5rem 1rem; /* Adjusted padding */
             text-align: center;
             margin-bottom: 2rem;
             border-radius: 8px 8px 0 0;
+            display: flex; /* Align logo and title */
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Space between logo and title */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+        }
+
+        header img {
+            max-height: 45px; /* Control logo size */
+            width: auto;
         }
 
         header h1 {
             margin: 0;
             font-size: 1.8rem;
+            color: var(--text-color); /* Ensure text color matches header */
+            font-weight: 600;
         }
+        /* --- END HEADER UPDATE --- */
 
         .card {
             background-color: white;
@@ -92,15 +110,15 @@
         }
 
         h2 {
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             margin-bottom: 1.5rem;
             padding-bottom: 0.8rem;
-            border-bottom: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color); /* Use new accent color */
             font-weight: 600;
         }
 
         h3 {
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             margin-bottom: 1rem;
             font-weight: 600;
         }
@@ -113,7 +131,7 @@
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             font-size: 0.95rem;
         }
 
@@ -139,8 +157,9 @@
         select:focus,
         textarea:focus {
             outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(212, 167, 96, 0.25);
+            border-color: var(--accent-color); /* Use new accent color */
+            /* Updated focus shadow to match new accent color */
+            box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.25);
         }
 
         textarea {
@@ -153,7 +172,7 @@
             padding: 1.5rem;
             border-radius: 6px;
             margin-bottom: 2rem;
-            border-left: 5px solid var(--primary-color);
+            border-left: 5px solid var(--primary-color); /* Use new primary color */
         }
 
         .form-row {
@@ -176,7 +195,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s, opacity 0.3s, transform 0.1s;
+            transition: background-color 0.3s, opacity 0.3s, transform 0.1s, color 0.3s; /* Added color transition */
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -201,13 +220,13 @@
             cursor: not-allowed;
         }
 
+        /* --- UPDATED BUTTONS --- */
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: var(--primary-color); /* Use new primary color */
             color: white;
         }
-
         .btn-primary:hover:not(:disabled) {
-            background-color: #0f2a53;
+            background-color: #52389d; /* Darker purple for hover */
         }
 
         .secondary-btn,
@@ -215,7 +234,6 @@
             background-color: #6c757d;
             color: white;
         }
-
         .secondary-btn:hover:not(:disabled),
         .btn-secondary:hover:not(:disabled) {
             background-color: #5a6268;
@@ -225,7 +243,6 @@
             background-color: var(--success-color);
             color: white;
         }
-
         .btn-success:hover:not(:disabled) {
             background-color: #218838;
         }
@@ -234,33 +251,30 @@
             background-color: var(--error-color);
             color: white;
         }
-
         .btn-danger:hover:not(:disabled) {
             background-color: #c82333;
         }
 
         .btn-info {
-            background-color: var(--info-color);
+            background-color: var(--info-color); /* Cyan */
             color: white;
         }
-
         .btn-info:hover:not(:disabled) {
-            background-color: #138496;
+            background-color: #138496; /* Darker cyan */
         }
 
         .btn-accent {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
+            background-color: var(--accent-color); /* Use new accent color (yellow) */
+            color: #333; /* Dark text for better contrast on yellow */
         }
-
         .btn-accent:hover:not(:disabled) {
-            background-color: #c89a50;
+            background-color: #e0a810; /* Darker yellow for hover */
         }
-
         .btn-accent:disabled {
-            background-color: #e0c8a0;
+            background-color: #fce8a5; /* Lighter yellow when disabled */
             color: #a0a0a0;
         }
+        /* --- END BUTTON UPDATE --- */
 
         /* --- Styles for AI buttons --- */
         #aiSummarizeBtn,
@@ -284,31 +298,26 @@
             margin-top: 15px;
             padding: 15px;
             background-color: #eef1f5;
-            /* Light neutral background */
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-color);
-            /* Accent border */
+            border-left: 4px solid var(--accent-color); /* Use new accent color */
             border-radius: 4px;
             display: none;
-            /* Initially hidden, shown on first AI Search click */
         }
 
         .ai-search-input-area p {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             margin-bottom: 10px;
         }
 
         /* --- Styles for AI Court Keywords (within combined area) --- */
         .ai-court-keywords-section {
             margin-bottom: 15px;
-            /* Space below court section */
         }
 
         .ai-court-keywords-section label {
-            color: var(--info-color);
-            /* Distinct color for court label */
+            color: var(--info-color); /* Use Info Cyan */
             margin-bottom: 10px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -323,16 +332,14 @@
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 5px;
-            /* Space below select */
             min-height: 20px;
-            /* Ensure container has some height even when empty */
         }
 
         .court-keyword-tag {
             display: inline-flex;
             align-items: center;
-            background-color: var(--court-tag-bg);
-            color: var(--court-tag-text);
+            background-color: var(--court-tag-bg); /* Info Cyan background */
+            color: var(--court-tag-text); /* White text */
             padding: 4px 10px;
             border-radius: 15px;
             font-size: 0.85rem;
@@ -341,14 +348,11 @@
 
         /* --- Styles for AI General Keywords (within combined area) --- */
         .ai-general-keywords-section {
-            /* Optional: Add top border if needed */
-            /* border-top: 1px dashed var(--border-color); */
-            /* padding-top: 15px; */
+            /* Optional: Styling */
         }
 
         .ai-general-keywords-section p {
-            color: var(--primary-color);
-            /* Default label color */
+            color: var(--primary-color); /* Use new primary color */
             margin-bottom: 10px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -359,15 +363,14 @@
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 15px;
-            /* Space below general tags */
             min-height: 20px;
         }
 
         .keyword-tag {
             display: inline-flex;
             align-items: center;
-            background-color: var(--general-tag-bg);
-            color: var(--general-tag-text);
+            background-color: var(--general-tag-bg); /* Use new primary color (purple) */
+            color: var(--general-tag-text); /* White text */
             padding: 4px 10px;
             border-radius: 15px;
             font-size: 0.85rem;
@@ -377,7 +380,6 @@
         .keyword-delete {
             margin-left: 8px;
             color: rgba(255, 255, 255, 0.8);
-            /* Slightly transparent white */
             background: none;
             border: none;
             cursor: pointer;
@@ -389,20 +391,17 @@
 
         .keyword-delete:hover {
             color: white;
-            /* Solid white on hover */
         }
 
-        /* Specific hover for general tags */
+        /* Specific hover for general tags (purple background) */
         .keyword-tag .keyword-delete:hover {
-            color: var(--accent-color);
+            color: var(--gradient-yellow); /* Use light yellow for contrast */
         }
 
-        /* Specific hover for court tags */
+        /* Specific hover for court tags (cyan background) */
         .court-keyword-tag .keyword-delete:hover {
-            color: var(--warning-color);
-            /* Yellowish hover for court tags */
+            color: var(--warning-color); /* Keep warning yellow */
         }
-
 
         .add-keyword-section {
             display: flex;
@@ -430,16 +429,13 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 15px;
-            /* Reduced padding slightly to accommodate filter */
             max-height: 350px;
-            /* Increased max-height */
             overflow-y: auto;
             margin-top: 15px;
             display: none;
-            /* Initially hidden */
         }
 
-        /* --- NEW: Styles for Results Filter --- */
+        /* --- Styles for Results Filter --- */
         .results-filter-container {
             display: flex;
             align-items: center;
@@ -448,37 +444,28 @@
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
             flex-wrap: wrap;
-            /* Allow wrapping on smaller screens */
         }
 
         .results-filter-container label {
             margin-bottom: 0;
-            /* Override default label margin */
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             white-space: nowrap;
         }
 
         .results-filter-container select {
             padding: 6px 10px;
-            /* Smaller padding */
             font-size: 0.9rem;
             border-radius: 4px;
             border: 1px solid var(--border-color);
             flex-grow: 1;
-            /* Allow select to grow */
             min-width: 150px;
-            /* Minimum width */
         }
-
-        /* --- END: Styles for Results Filter --- */
-
 
         .search-results-list {
-            /* This div will now hold the actual list items */
+            /* Holds the actual list items */
         }
-
 
         .search-result-item {
             display: flex;
@@ -489,18 +476,16 @@
             font-size: 0.9rem;
         }
 
-        /* Make hidden items take no space */
         .search-result-item.hidden {
             display: none;
         }
-
 
         .search-result-item:last-child {
             border-bottom: none;
         }
 
         .search-result-item a {
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             text-decoration: none;
             margin-right: 15px;
             flex-grow: 1;
@@ -509,7 +494,7 @@
 
         .search-result-item a:hover {
             text-decoration: underline;
-            color: var(--accent-color);
+            color: var(--accent-color); /* Use new accent color */
         }
 
         .search-result-item .btn-add-precedent {
@@ -519,8 +504,7 @@
             flex-shrink: 0;
             min-width: 60px;
             background-color: var(--secondary-color);
-            /* Lighter gray for add button */
-            color: var(--primary-color);
+            color: var(--primary-color); /* Use new primary color */
             border: 1px solid #ccc;
         }
 
@@ -528,7 +512,6 @@
             background-color: #e2e6ea;
             border-color: #bbb;
         }
-
 
         .search-result-item .btn-add-precedent:disabled {
             background-color: var(--added-color);
@@ -614,6 +597,7 @@
         input.error:focus,
         textarea.error:focus,
         select.error:focus {
+            /* Updated focus shadow for errors */
             box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
         }
 
@@ -641,7 +625,7 @@
         .spinner {
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--accent-color);
+            border-top-color: var(--accent-color); /* Spinner uses new accent yellow */
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
@@ -699,14 +683,14 @@
         }
 
         .notification.info {
-            background-color: var(--info-color);
+            background-color: var(--info-color); /* Cyan */
         }
 
         .tooltip {
             position: relative;
             display: inline-block;
             margin-left: 8px;
-            color: var(--info-color);
+            color: var(--info-color); /* Use Info Cyan */
             cursor: help;
         }
 
@@ -824,6 +808,7 @@
             border: none;
             padding: 0;
             font-size: 1.5rem;
+            color: var(--primary-color); /* Use new primary color */
         }
 
         .close {
@@ -930,7 +915,7 @@
                 line-height: 1.6;
             }
 
-            header,
+            header, /* Hide redesigned header on print */
             footer,
             .container>.card:not(.modal),
             .debug-panel,
@@ -989,6 +974,17 @@
         }
 
         @media (max-width: 768px) {
+            header {
+                padding: 1rem; /* Adjust header padding */
+                gap: 10px; /* Adjust gap */
+            }
+            header img {
+                max-height: 35px; /* Smaller logo on mobile */
+            }
+            header h1 {
+                font-size: 1.5rem; /* Smaller title on mobile */
+            }
+
             .container {
                 padding: 10px;
                 margin-top: 10px;
@@ -1122,6 +1118,8 @@
 
 <body>
     <header>
+        <!-- IMPORTANT: Replace 'lawai-logo.png' with the actual path to your logo file -->
+        <img src="lawai-logo.png" alt="Lawai.io Logo">
         <h1>民事訴訟書狀生成系統</h1>
     </header>
 
@@ -1462,6 +1460,11 @@
     </footer>
 
     <script>
+        // --- JAVASCRIPT REMAINS THE SAME ---
+        // No changes needed to the JavaScript logic based on the requested visual redesign.
+        // The script correctly references elements by ID and applies classes,
+        // which are styled by the updated CSS.
+
         document.addEventListener('DOMContentLoaded', function () {
             // --- DOM Element References ---
             const form = document.getElementById('legalDocForm');
@@ -2168,9 +2171,6 @@
 
             // --- Function to handle case type dropdown change ---
             function handleCaseTypeChange() { if (!caseTypeSelect || !caseTypeCustomInput) return; const customError = document.getElementById('caseTypeCustom-error'); const selectError = document.getElementById('caseType-error'); if (caseTypeSelect.value === 'custom') { caseTypeCustomInput.style.display = 'block'; selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } else { caseTypeCustomInput.style.display = 'none'; caseTypeCustomInput.value = ''; customError.style.display = 'none'; caseTypeCustomInput.classList.remove('error'); if (caseTypeSelect.value !== '') { selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } } }
-
-
-
 
         }); // End DOMContentLoaded
     </script>
