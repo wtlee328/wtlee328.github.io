@@ -78,19 +78,21 @@
             background: linear-gradient(135deg, var(--gradient-blue), var(--gradient-purple), var(--gradient-yellow)); /* New Gradient */
             color: var(--text-color); /* Dark text on light gradient */
             padding: 1.5rem 1rem; /* Adjusted padding */
-            text-align: center;
+            /* text-align: center; Removed as flex handles alignment */
             margin-bottom: 2rem;
             border-radius: 8px 8px 0 0;
             display: flex; /* Align logo and title */
-            align-items: center;
-            justify-content: center;
+            align-items: center; /* Keeps vertical alignment */
+            /* justify-content: center;  <-- CHANGE THIS */
+            justify-content: flex-start; /* <-- TO THIS (Aligns items to the left) */
             gap: 15px; /* Space between logo and title */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
         }
 
         header img {
-            max-height: 45px; /* Control logo size */
-            width: auto;
+            /* max-height: 45px; */ /* <-- CHANGE THIS */
+            max-height: 35px;   /* <-- TO THIS (Or your desired smaller size) */
+            width: auto; /* Keeps aspect ratio */
         }
 
         header h1 {
@@ -98,6 +100,7 @@
             font-size: 1.8rem;
             color: var(--text-color); /* Ensure text color matches header */
             font-weight: 600;
+            /* No change needed here, it will naturally sit next to the logo */
         }
         /* --- END HEADER UPDATE --- */
 
@@ -1119,7 +1122,7 @@
 <body>
     <header>
         <!-- IMPORTANT: Replace 'lawai-logo.png' with the actual path to your logo file -->
-        <img src="lawai-logo.svg" alt="Lawai.io Logo">
+        <img src="lawai-logo.png" alt="Lawai.io Logo">
         <h1>民事訴訟書狀生成系統</h1>
     </header>
 
