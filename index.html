@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Material Symbols (Outlined) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script>
         // Global Error Handler
         window.onerror = function (message, source, lineno, colno, error) {
@@ -18,7 +18,7 @@
         window.debugInfo = {
             logRequests: true,
             logResponses: true,
-            version: "wtlee328-debug-2025-04-22-results-filter-v2", // Updated version
+            version: "wtlee328-debug-2025-04-22-results-filter-v2-material-icons", // Updated version
             user: "wtlee328",
             timestamp: new Date().toISOString()
         };
@@ -114,8 +114,11 @@
             margin-bottom: 0; /* No margin for the last icon in a group */
         }
 
-        .sidebar-icon i {
-             width: 24px; /* Ensure icons have a consistent width base */
+        .sidebar-icon .material-symbols-outlined { /* UPDATED: Target Material Symbols */
+             font-size: 28px; /* Material Symbol default size */
+             width: 28px; /* Consistent width */
+             height: 28px; /* Consistent height */
+             line-height: 1; /* Prevent extra space */
              text-align: center;
         }
 
@@ -289,10 +292,16 @@
             transform: scale(0.98);
         }
 
-        button i,
-        .btn i {
+        /* UPDATED: Style Material Symbols within buttons */
+        button .material-symbols-outlined,
+        .btn .material-symbols-outlined {
             margin-right: 8px;
+            font-size: 1.2em; /* Adjust size relative to button text */
+            vertical-align: text-bottom; /* Better alignment */
         }
+
+        /* Adjust icon only buttons if needed */
+        /* button:has(.material-symbols-outlined:only-child) { padding: 8px; } */
 
         button:disabled,
         .btn:disabled {
@@ -464,10 +473,19 @@
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
-            padding: 0 2px;
+            padding: 0; /* Remove padding for icon */
             line-height: 1;
             transition: color 0.2s;
+            display: inline-flex; /* Align icon properly */
+            align-items: center;
+            justify-content: center;
         }
+        /* Style the icon within the delete button */
+        .keyword-delete .material-symbols-outlined {
+            font-size: 16px; /* Make close icon smaller */
+            vertical-align: middle; /* Align icon */
+        }
+
 
         .keyword-delete:hover {
             color: white;
@@ -502,6 +520,12 @@
             font-size: 0.9rem;
             white-space: nowrap;
         }
+        /* Align icon in add keyword button */
+        .add-keyword-section button .material-symbols-outlined {
+            margin-right: 5px;
+            font-size: 1.1em;
+        }
+
 
         /* --- Styles for AI Search Results List --- */
         .search-results-list-container {
@@ -582,10 +606,21 @@
             font-size: 0.8rem;
             white-space: nowrap;
             flex-shrink: 0;
-            min-width: 60px;
+            min-width: 80px; /* Adjust width for icon+text */
             background-color: var(--secondary-color);
             color: var(--primary-color); /* Use new primary color */
             border: 1px solid #ccc;
+            /* Ensure icon aligns well in this small button */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Style icon specifically in add precedent button */
+        .search-result-item .btn-add-precedent .material-symbols-outlined {
+             margin-right: 4px;
+             font-size: 1em; /* Slightly smaller */
+             vertical-align: middle;
+             line-height: 1;
         }
 
         .search-result-item .btn-add-precedent:hover:not(:disabled) {
@@ -599,6 +634,11 @@
             cursor: default;
             opacity: 0.8;
             border-color: var(--added-color);
+            min-width: 80px; /* Ensure consistent width */
+        }
+
+        .search-result-item .btn-add-precedent:disabled .material-symbols-outlined {
+             margin-right: 4px;
         }
 
         .search-result-item .btn-add-precedent:disabled:hover {
@@ -645,7 +685,7 @@
 
         .document-buttons .btn-uniform,
         .document-buttons button {
-            min-width: 120px;
+            min-width: 130px; /* Increased min-width slightly for icon */
             height: 40px;
             padding: 8px 15px !important;
             font-size: 0.9rem !important;
@@ -702,7 +742,18 @@
             font-size: 1.1rem;
         }
 
-        .spinner {
+        /* --- NEW: Spin Animation for Material Icons --- */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-animation {
+            display: inline-block; /* Important for animation */
+            animation: spin 1s linear infinite;
+        }
+        /* --- END Spin Animation --- */
+
+        .spinner { /* Original spinner (kept for reference/fallback, can be removed if loading icon is always Material) */
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: var(--accent-color); /* Spinner uses new accent yellow */
@@ -744,9 +795,11 @@
             opacity: 1;
         }
 
-        .notification i {
+        /* UPDATED: Style Material Symbol in notifications */
+        .notification .material-symbols-outlined {
             margin-right: 12px;
-            font-size: 1.3rem;
+            font-size: 1.4rem; /* Adjust size */
+            vertical-align: middle; /* Align */
         }
 
         .notification.success {
@@ -768,10 +821,16 @@
 
         .tooltip {
             position: relative;
-            display: inline-block;
+            display: inline-flex; /* Use inline-flex for alignment */
+            align-items: center;    /* Align icon vertically */
             margin-left: 8px;
             color: var(--info-color); /* Use Info Cyan */
             cursor: help;
+        }
+        /* UPDATED: Style Material Symbol in tooltip */
+        .tooltip .material-symbols-outlined {
+            font-size: 1.1em; /* Adjust size relative to label text */
+             vertical-align: middle; /* Ensure vertical alignment */
         }
 
         .tooltip .tooltip-text {
@@ -891,20 +950,33 @@
             color: var(--primary-color); /* Use new primary color */
         }
 
-        .close {
+        /* UPDATED: Style for close button (using icon) */
+        .close-button {
             color: #aaa;
-            font-size: 32px;
+            background: none;
+            border: none;
+            font-size: 2rem; /* Adjust size of the icon container */
             font-weight: bold;
             cursor: pointer;
             transition: color 0.2s ease;
             line-height: 1;
+            padding: 0; /* Remove padding */
+            display: inline-flex; /* Align icon */
+            align-items: center;
+            justify-content: center;
+        }
+        .close-button .material-symbols-outlined {
+            font-size: inherit; /* Inherit size from button */
+            vertical-align: middle;
         }
 
-        .close:hover,
-        .close:focus {
+        .close-button:hover,
+        .close-button:focus {
             color: #333;
             text-decoration: none;
+            outline: none;
         }
+
 
         .document-area {
             background-color: #fff;
@@ -928,6 +1000,10 @@
             margin-top: auto;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
+        }
+        /* Ensure icons align well in document buttons */
+        .document-buttons button .material-symbols-outlined {
+             vertical-align: text-bottom; /* Align icon with text */
         }
 
         @media print {
@@ -988,7 +1064,7 @@
 
             .modal-header,
             .document-buttons,
-            .close,
+            .close-button, /* Hide new close button */
             .search-results-list-container,
             .ai-search-input-area,
             .results-filter-container
@@ -1087,8 +1163,10 @@
                 font-size: 1.4rem;
                 margin-bottom: 10px;
             }
-             .sidebar-icon i {
-                width: 20px;
+             .sidebar-icon .material-symbols-outlined { /* Adjust icon size */
+                font-size: 24px;
+                width: 24px;
+                height: 24px;
              }
 
             /* Adjust main content layout */
@@ -1237,26 +1315,23 @@
     <!-- NEW: Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-icons-top">
-            <!-- TODO: Update href or add onclick handlers -->
+            <!-- UPDATED Icons -->
             <a href="#profile" class="sidebar-icon" title="會員中心">
-                <i class="fas fa-user-circle"></i>
+                <span class="material-symbols-outlined">account_circle</span>
             </a>
             <a href="#home" class="sidebar-icon active" title="首頁"> <!-- Example: Add 'active' class for current page -->
-                <i class="fas fa-home"></i>
+                 <span class="material-symbols-outlined">home</span>
             </a>
             <a href="#workspace" class="sidebar-icon" title="工作區">
-                <i class="fas fa-briefcase"></i>
+                 <span class="material-symbols-outlined">workspaces</span>
             </a>
             <a href="#generate" class="sidebar-icon" title="生成文件區">
-                <i class="fas fa-file-alt"></i>
-            </a>
-            <a href="#upload" class="sidebar-icon" title="上傳文件區">
-                <i class="fas fa-upload"></i>
+                 <span class="material-symbols-outlined">description</span>
             </a>
         </div>
         <div class="sidebar-icons-bottom">
             <a href="#settings" class="sidebar-icon" title="設置">
-                <i class="fas fa-cog"></i>
+                 <span class="material-symbols-outlined">settings</span>
             </a>
         </div>
     </aside>
@@ -1267,6 +1342,7 @@
         <header>
             <!-- IMPORTANT: Replace 'lawai-logo.svg' with the actual path to your logo file -->
             <img src="lawai-logo.svg" alt="Lawai.io Logo">
+            <!-- <h1>Lawai.io - 法律書狀生成器</h1> No text needed if logo has it -->
         </header>
 
         <div class="container">
@@ -1381,8 +1457,11 @@
                         <h3>當事人資料</h3>
                         <div class="form-group">
                             <label for="plaintiff" class="required">原告資料
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請填寫原告完整姓名、地址。若有多位原告，請換行分隔。法定代理人亦請註明。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                    <span class="material-symbols-outlined">help_outline</span>
+                                    <span class="tooltip-text">請填寫原告完整姓名、地址。若有多位原告，請換行分隔。法定代理人亦請註明。</span>
+                                </span>
                             </label>
                             <textarea id="plaintiff" name="plaintiff" placeholder="例：
 原告 林大明
@@ -1398,8 +1477,11 @@
                         </div>
                         <div class="form-group">
                             <label for="defendant" class="required">被告資料
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請填寫被告完整姓名、地址。若有多位被告，請換行分隔。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                     <span class="material-symbols-outlined">help_outline</span>
+                                     <span class="tooltip-text">請填寫被告完整姓名、地址。若有多位被告，請換行分隔。</span>
+                                </span>
                             </label>
                             <textarea id="defendant" name="defendant" placeholder="例：
 被告 王小華
@@ -1425,8 +1507,11 @@
                         </div>
                         <div class="form-group">
                             <label for="caseProcess">案件詳細經過 (選填)
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">若需 AI
-                                        協助統整案情摘要或事實，請在此詳細描述案件的完整過程、時間、地點、人物、對話、事件等細節。點選下方按鈕觸發 AI。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                    <span class="material-symbols-outlined">help_outline</span>
+                                    <span class="tooltip-text">若需 AI 協助統整案情摘要或事實，請在此詳細描述案件的完整過程、時間、地點、人物、對話、事件等細節。點選下方按鈕觸發 AI。</span>
+                                </span>
                             </label>
                             <textarea id="caseProcess" name="caseProcess" rows="6"
                                 placeholder="請詳細描述案件從發生到現在的完整經過..."></textarea>
@@ -1437,8 +1522,11 @@
                         </div>
                         <div class="form-group">
                             <label for="requests" class="required">訴之聲明 (請求事項)
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請條列您希望法院判決的具體內容，應明確、可執行。例如：被告應給付原告...元、確認...契約無效等。利息計算方式也請寫明。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                     <span class="material-symbols-outlined">help_outline</span>
+                                     <span class="tooltip-text">請條列您希望法院判決的具體內容，應明確、可執行。例如：被告應給付原告...元、確認...契約無效等。利息計算方式也請寫明。</span>
+                                </span>
                             </label>
                             <textarea id="requests" name="requests" rows="5" placeholder="例：
 一、被告應給付原告新台幣○○萬元整。
@@ -1449,8 +1537,11 @@
                         </div>
                         <div class="form-group">
                             <label for="facts" class="required">事實及理由
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請依時間順序，分點敘述支持您訴之聲明的客觀事實與法律理由。每點應簡潔明瞭，至少需包含3個關鍵事實點。可引用證據（如：詳參原證1）。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                     <span class="material-symbols-outlined">help_outline</span>
+                                     <span class="tooltip-text">請依時間順序，分點敘述支持您訴之聲明的客觀事實與法律理由。每點應簡潔明瞭，至少需包含3個關鍵事實點。可引用證據（如：詳參原證1）。</span>
+                                </span>
                             </label>
                             <textarea id="facts" name="facts" rows="8" placeholder="例：
 一、原告於民國113年○月○日借款新台幣○○萬元予被告，約定清償日為113年○月○日（詳參原證1：借據影本）。
@@ -1460,8 +1551,11 @@
                         </div>
                         <div class="form-group">
                             <label for="evidence" class="required">證據名稱及件數
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請條列您提出的所有證據文件名稱及其件數。例如：原證1：借據影本乙份。若為被告，則用「被證」。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                     <span class="material-symbols-outlined">help_outline</span>
+                                     <span class="tooltip-text">請條列您提出的所有證據文件名稱及其件數。例如：原證1：借據影本乙份。若為被告，則用「被證」。</span>
+                                </span>
                             </label>
                             <textarea id="evidence" name="evidence" rows="4" placeholder="例：
 原證1：借據影本乙份
@@ -1472,8 +1566,11 @@
                         </div>
                         <div class="form-group">
                             <label for="laws">適用法條 (選填)
-                                <span class="tooltip"><i class="fas fa-question-circle"></i><span
-                                        class="tooltip-text">請列出您認為適用的主要法條，每條一行。AI 搜尋結果將會填入此處。</span></span>
+                                <!-- UPDATED Tooltip Icon -->
+                                <span class="tooltip">
+                                     <span class="material-symbols-outlined">help_outline</span>
+                                     <span class="tooltip-text">請列出您認為適用的主要法條，每條一行。AI 搜尋結果將會填入此處。</span>
+                                </span>
                             </label>
                             <textarea id="laws" name="laws" rows="3" placeholder="例：
 民法第474條
@@ -1510,8 +1607,10 @@
                                     </div>
                                     <div class="add-keyword-section">
                                         <input type="text" id="addKeywordInput" placeholder="新增一般關鍵字...">
-                                        <button type="button" id="addKeywordBtn" class="btn btn-secondary"><i
-                                                class="fas fa-plus"></i> 新增</button>
+                                        <!-- UPDATED Icon -->
+                                        <button type="button" id="addKeywordBtn" class="btn btn-secondary">
+                                            <span class="material-symbols-outlined">add</span> 新增
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1579,40 +1678,51 @@
         <div id="documentModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>生成的書狀預覽</h2> <span class="close" title="關閉">×</span>
+                    <h2>生成的書狀預覽</h2>
+                    <!-- UPDATED: Close button with icon -->
+                    <button class="close-button" title="關閉">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
                 <div class="document-area" id="documentContent" aria-live="polite"></div>
                 <div class="document-buttons">
-                    <button id="copyBtn" class="secondary-btn btn-uniform" title="複製書狀內容至剪貼簿"><i class="fas fa-copy"></i>
-                        複製內容</button>
-                    <button id="printBtn" class="secondary-btn btn-uniform" title="列印書狀"><i class="fas fa-print"></i>
-                        列印</button>
-                    <button id="downloadBtn" class="secondary-btn btn-uniform" title="下載為 .txt 文字檔"><i
-                            class="fas fa-download"></i> 下載 (.txt)</button>
-                    <button id="emailBtn" class="secondary-btn btn-uniform" title="將書狀內容(模擬)寄送至您填寫的信箱"><i
-                            class="fas fa-envelope"></i> 寄送Email</button>
+                    <!-- UPDATED Icons -->
+                    <button id="copyBtn" class="secondary-btn btn-uniform" title="複製書狀內容至剪貼簿">
+                        <span class="material-symbols-outlined">content_copy</span> 複製內容
+                    </button>
+                    <button id="printBtn" class="secondary-btn btn-uniform" title="列印書狀">
+                        <span class="material-symbols-outlined">print</span> 列印
+                    </button>
+                    <button id="downloadBtn" class="secondary-btn btn-uniform" title="下載為 .txt 文字檔">
+                        <span class="material-symbols-outlined">download</span> 下載 (.txt)
+                    </button>
+                    <button id="emailBtn" class="secondary-btn btn-uniform" title="將書狀內容(模擬)寄送至您填寫的信箱">
+                        <span class="material-symbols-outlined">mail_outline</span> 寄送Email
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay">
-            <div class="spinner"></div>
+            <div class="spinner"></div> <!-- Keep spinner or replace with Material Icon -->
+            <!-- Example Material Icon Spinner: -->
+            <!-- <span class="material-symbols-outlined spin-animation" style="font-size: 50px; color: var(--accent-color);">sync</span> -->
             <p>正在處理中，請稍候...</p>
             <p id="estimatedTime"></p>
         </div>
         <!-- Notification Area -->
-        <div class="notification" id="notification"></div>
+        <div class="notification" id="notification">
+             <!-- Icon added dynamically by JS -->
+        </div>
         <!-- Debug Panel -->
         <div class="debug-panel" id="debugPanel"></div>
 
     </div> <!-- End Main Content Wrapper -->
 
     <script>
-        // --- JAVASCRIPT REMAINS THE SAME ---
-        // No changes needed to the JavaScript logic based on the requested visual redesign.
-        // The script correctly references elements by ID and applies classes,
-        // which are styled by the updated CSS.
+        // --- JAVASCRIPT REMAINS THE SAME LOGICALLY ---
+        // Updated icon names and classes where icons are created/modified dynamically
 
         document.addEventListener('DOMContentLoaded', function () {
             // --- DOM Element References ---
@@ -1621,7 +1731,7 @@
             const notification = document.getElementById('notification');
             const debugPanel = document.getElementById('debugPanel');
             const modal = document.getElementById('documentModal');
-            const closeModalBtn = modal.querySelector('.close');
+            const closeModalBtn = modal.querySelector('.close-button'); // UPDATED selector
             const documentContent = document.getElementById('documentContent');
             const copyBtn = document.getElementById('copyBtn');
             const printBtn = document.getElementById('printBtn');
@@ -1660,9 +1770,9 @@
 
             // --- Configuration ---
             // IMPORTANT: Replace with your actual webhook URLs
-            const generateWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-document'; // <-- REPLACE
-            const aiOrganizerWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-doc-organizer'; // <-- REPLACE
-            const aiSearchWebhookUrl = 'https://9b0a-2600-4040-a2cb-5700-1969-dd70-68c7-8d7.ngrok-free.app/webhook/legal-doc-search'; // <-- REPLACE
+            const generateWebhookUrl = 'https://hook.eu2.make.com/your-generate-hook'; // <-- REPLACE
+            const aiOrganizerWebhookUrl = 'https://hook.eu2.make.com/your-organizer-hook'; // <-- REPLACE
+            const aiSearchWebhookUrl = 'https://hook.eu2.make.com/your-search-hook'; // <-- REPLACE
             const LOCAL_STORAGE_KEY = 'wtlee328_lastLegalDocument_v2'; // Updated key if structure changes
             const DEBUG_MODE = true; // Set to false for production
             let aiSearchState = 'initial'; // 'initial' or 'keywords_ready'
@@ -1673,7 +1783,31 @@
             function log(message, type = 'info') { const timestamp = new Date().toLocaleTimeString(); const logPrefix = `[${type.toUpperCase()}][${timestamp}]`; if (DEBUG_MODE || type === 'error' || type === 'warning') { if (type === 'error') console.error(logPrefix, message); else if (type === 'warning') console.warn(logPrefix, message); else console.log(logPrefix, message); } if (debugPanel) { const logEntry = document.createElement('div'); logEntry.className = `log-entry ${type}`; logEntry.textContent = `[${timestamp}] ${String(message).substring(0, 300)}`; debugPanel.appendChild(logEntry); while (debugPanel.childNodes.length > 100) { debugPanel.removeChild(debugPanel.firstChild); } debugPanel.scrollTop = debugPanel.scrollHeight; } }
 
             // --- UI Feedback Functions ---
-            function showNotification(message, type = 'info', duration = 5000) { if (!notification) return; notification.textContent = ''; notification.className = `notification ${type}`; const icon = document.createElement('i'); const iconMap = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' }; icon.className = `fas ${iconMap[type] || 'fa-info-circle'}`; notification.appendChild(icon); notification.appendChild(document.createTextNode(` ${message}`)); notification.classList.add('show'); setTimeout(() => { notification.classList.remove('show'); }, duration); }
+            function showNotification(message, type = 'info', duration = 5000) {
+                 if (!notification) return;
+                 notification.textContent = ''; // Clear previous text
+                 notification.className = `notification ${type}`; // Base + type class
+
+                 // UPDATED: Use Material Symbols
+                 const icon = document.createElement('span');
+                 icon.className = 'material-symbols-outlined';
+                 const iconMap = {
+                     success: 'check_circle',
+                     error: 'error',
+                     warning: 'warning',
+                     info: 'info'
+                 };
+                 icon.textContent = iconMap[type] || 'info'; // Set the icon name as text content
+
+                 notification.appendChild(icon);
+                 notification.appendChild(document.createTextNode(` ${message}`)); // Add space before message
+                 notification.classList.add('show');
+
+                 setTimeout(() => {
+                     notification.classList.remove('show');
+                 }, duration);
+            }
+
             function showLoading(message = "處理中，請稍候...", estimatedSeconds = null) { if (!loadingOverlay) return; loadingOverlay.querySelector('p:first-of-type').textContent = message; estimatedTimeP.textContent = estimatedSeconds ? `預計需時：約 ${estimatedSeconds} 秒` : ''; loadingOverlay.style.display = 'flex'; }
             function hideLoading() { if (loadingOverlay) loadingOverlay.style.display = 'none'; }
 
@@ -1706,18 +1840,38 @@
             function loadDocumentFromLocalStorage() { try { const savedData = localStorage.getItem(LOCAL_STORAGE_KEY); if (savedData) { const parsedData = JSON.parse(savedData); if (parsedData?.content && parsedData.timestamp) return parsedData; } } catch (e) { log(`無法從本地存儲讀取或解析: ${e.message}`, 'error'); localStorage.removeItem(LOCAL_STORAGE_KEY); } return null; }
 
             // --- Button Creation & Setup ---
-            function createButton(id, text, icon, styleClass, clickHandler, isSubmit = false, isUniform = true) { const button = document.createElement('button'); button.id = id; button.type = isSubmit ? 'submit' : 'button'; button.className = `btn ${styleClass}` + (isUniform ? ' btn-uniform' : ''); button.innerHTML = `<i class="fas fa-${icon}"></i> ${text}`; if (clickHandler) { button.addEventListener('click', clickHandler); } return button; }
+             // UPDATED createButton to use Material Symbols
+            function createButton(id, text, iconName, styleClass, clickHandler, isSubmit = false, isUniform = true) {
+                const button = document.createElement('button');
+                button.id = id;
+                button.type = isSubmit ? 'submit' : 'button';
+                button.className = `btn ${styleClass}` + (isUniform ? ' btn-uniform' : '');
+                // Use Material Symbols span
+                button.innerHTML = `<span class="material-symbols-outlined">${iconName}</span> ${text}`;
+                if (clickHandler) {
+                    button.addEventListener('click', clickHandler);
+                }
+                return button;
+            }
+
             function setupButtons() {
                 buttonsContainer.innerHTML = ''; const leftButtonGroup = document.createElement('div');
-                leftButtonGroup.appendChild(createButton('demoBtn', '示範', 'magic', 'secondary-btn', fillDemoData));
-                leftButtonGroup.appendChild(createButton('testBtn', '測試', 'vial', 'secondary-btn', runTest));
-                leftButtonGroup.appendChild(createButton('resetBtn', '清除', 'undo', 'secondary-btn', resetForm));
+                 // UPDATED Icon names for Material Symbols
+                leftButtonGroup.appendChild(createButton('demoBtn', '示範', 'auto_fix_high', 'secondary-btn', fillDemoData)); // 'magic' -> 'auto_fix_high' or 'play_circle_outline'
+                leftButtonGroup.appendChild(createButton('testBtn', '測試', 'science', 'secondary-btn', runTest)); // 'vial' -> 'science' or 'bug_report'
+                leftButtonGroup.appendChild(createButton('resetBtn', '清除', 'restart_alt', 'secondary-btn', resetForm)); // 'undo' -> 'restart_alt'
                 const savedData = loadDocumentFromLocalStorage();
                 if (savedData?.timestamp) {
                     const timestamp = new Date(savedData.timestamp); const now = new Date(); const diffMinutes = Math.floor((now - timestamp) / (1000 * 60));
-                    if (diffMinutes < 60) { leftButtonGroup.appendChild(createButton('restoreBtn', '恢復', 'history', 'secondary-btn', () => { if (savedData.content) { documentContent.textContent = processLegalDocumentText(savedData.content); modal.style.display = 'block'; log(`從本地存儲恢復書狀 (生成於 ${diffMinutes} 分鐘前)`, 'storage'); showNotification('已恢復上次生成的書狀內容', 'success'); } else { showNotification('找不到上次的內容', 'warning'); } })); log(`發現 ${diffMinutes} 分鐘前生成的本地存儲數據`, 'info'); } else { localStorage.removeItem(LOCAL_STORAGE_KEY); log('已清除過期的本地存儲數據', 'info'); }
+                    if (diffMinutes < 60) {
+                        leftButtonGroup.appendChild(createButton('restoreBtn', '恢復', 'history', 'secondary-btn', () => { // 'history' is the same
+                            if (savedData.content) { documentContent.textContent = processLegalDocumentText(savedData.content); modal.style.display = 'block'; log(`從本地存儲恢復書狀 (生成於 ${diffMinutes} 分鐘前)`, 'storage'); showNotification('已恢復上次生成的書狀內容', 'success'); } else { showNotification('找不到上次的內容', 'warning'); }
+                        }));
+                        log(`發現 ${diffMinutes} 分鐘前生成的本地存儲數據`, 'info');
+                     } else { localStorage.removeItem(LOCAL_STORAGE_KEY); log('已清除過期的本地存儲數據', 'info'); }
                 }
-                buttonsContainer.appendChild(leftButtonGroup); buttonsContainer.appendChild(createButton('submitBtn', '生成書狀', 'file-alt', 'btn-primary', null, true));
+                buttonsContainer.appendChild(leftButtonGroup);
+                buttonsContainer.appendChild(createButton('submitBtn', '生成書狀', 'description', 'btn-primary', null, true)); // 'file-alt' -> 'description' or 'note_add'
                 form.removeEventListener('submit', handleFormSubmit); form.addEventListener('submit', handleFormSubmit);
             }
 
@@ -1727,7 +1881,16 @@
             function resetForm() { if (confirm('您確定要清除所有已填寫的欄位嗎？')) { log('執行表單重置', 'ui'); form.reset(); clearErrors(); handleCaseTypeChange(); updateAiButtonState(); resetAiSearchUI(); showNotification('表單欄位已清除', 'info'); } }
 
             // --- AI Summarize ---
-            function updateAiButtonState() { if (!caseProcessTextarea || !aiSummarizeButtonContainer) return; const processValue = caseProcessTextarea.value.trim(); aiSummarizeButtonContainer.innerHTML = ''; if (processValue) { const aiButton = createButton('aiSummarizeBtn', 'AI 統整', 'wand-magic-sparkles', 'btn-accent', triggerAiSummarize, false, false); aiSummarizeButtonContainer.appendChild(aiButton); } }
+            function updateAiButtonState() {
+                if (!caseProcessTextarea || !aiSummarizeButtonContainer) return;
+                const processValue = caseProcessTextarea.value.trim();
+                aiSummarizeButtonContainer.innerHTML = '';
+                if (processValue) {
+                    // UPDATED Icon name
+                    const aiButton = createButton('aiSummarizeBtn', 'AI 統整', 'auto_awesome', 'btn-accent', triggerAiSummarize, false, false); // 'wand-magic-sparkles' -> 'auto_awesome' or 'psychology'
+                    aiSummarizeButtonContainer.appendChild(aiButton);
+                }
+            }
             function populateFieldsFromAI(aiData) {
                 log("正在使用 AI 數據填充表單欄位", "ui");
                 const formatList = (items, prefixType = 'number') => { if (!Array.isArray(items) || items.length === 0) return ''; const prefixRegex = /^[a-z\d一二三四五六七八九十]+[、\.\)]\s*/i; return items.map((item, index) => { let currentItem = String(item).trim().replace(prefixRegex, "").replace(/^[a-z][\.\)]\s*/i, "").replace(/^[-•*]\s*/, "").trim(); let prefix = ''; if (prefixType === 'number') { const chineseNumerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']; prefix = (index < chineseNumerals.length ? chineseNumerals[index] : (index + 1)) + '、'; } else if (prefixType === 'bullet') { prefix = '● '; } else { prefix = `${index + 1}. `; } return currentItem ? prefix + currentItem : ''; }).filter(Boolean).join('\n'); };
@@ -1740,8 +1903,14 @@
                 const caseTypeVal = getCaseTypeValue(); if (!caseTypeVal) { showNotification('請選擇或輸入「書狀類型」', 'warning'); if (caseTypeSelect.value === 'custom') { showError('caseTypeCustom', '請輸入自訂書狀類型'); caseTypeCustomInput?.focus(); } else { showError('caseType', '請選擇書狀類型'); caseTypeSelect?.focus(); } return; }
                 const caseTitleText = caseTitleInput?.value.trim(); if (!caseTitleText) { showNotification('請填寫「案件案由」欄位', 'warning'); showError('caseTitle', 'AI 統整需要案件案由'); caseTitleInput?.focus(); return; }
                 const processText = caseProcessTextarea.value.trim(); if (!processText) { showNotification('請先在「案件詳細經過」欄位填寫內容', 'warning'); caseProcessTextarea.focus(); return; }
-                const aiButton = document.getElementById('aiSummarizeBtn'); let originalButtonHTML = ''; if (aiButton) { originalButtonHTML = aiButton.innerHTML; aiButton.disabled = true; aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 統整中...'; }
-                log('觸發 AI 統整，發送 類型+案由+經過 到 n8n...', 'request'); showNotification('正在請求 AI 統整，請稍候...', 'info');
+                const aiButton = document.getElementById('aiSummarizeBtn'); let originalButtonHTML = '';
+                if (aiButton) {
+                     originalButtonHTML = aiButton.innerHTML;
+                     aiButton.disabled = true;
+                     // UPDATED loading state icon
+                     aiButton.innerHTML = '<span class="material-symbols-outlined spin-animation">hourglass_empty</span> 統整中...'; // Or 'sync'
+                }
+                log('觸發 AI 統整，發送 類型+案由+經過 到 Webhook...', 'request'); showNotification('正在請求 AI 統整，請稍候...', 'info');
                 try {
                     const payload = { caseType: caseTypeVal, caseTitle: caseTitleText, caseProcess: processText }; log('發送到 AI Organizer Webhook 的 Payload:', 'debug'); if (DEBUG_MODE) console.log("AI Organizer Payload:", JSON.stringify(payload, null, 2));
                     const response = await fetch(aiOrganizerWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-User-Id': window.debugInfo.user || 'unknown', 'X-Action': 'analyze-case-details' }, body: JSON.stringify(payload) }); log(`AI 統整回應狀態: ${response.status}`, 'response');
@@ -1750,8 +1919,8 @@
                     let aiData = (Array.isArray(result) && result.length > 0) ? result[0] : (typeof result === 'object' && result !== null ? result : null);
                     if (!aiData) { showNotification('AI 回應格式錯誤或為空', 'error', 8000); log(`AI 回應格式非預期: ${typeof result}`, 'error'); throw new Error('AI 回應格式無法識別'); }
                     log('提取到的 AI 結構化數據:', 'response'); if (DEBUG_MODE) console.log('AI Data (Extracted):', JSON.stringify(aiData, null, 2));
-                    if (aiData.parseError) { showNotification(`AI 回應解析錯誤: ${aiData.parseError}`, 'error', 8000); log(`n8n 報告解析錯誤: ${aiData.parseError}`, 'error'); if (aiData.rawOutput) console.error("LLM Raw Output (解析失敗):", aiData.rawOutput); }
-                    if (aiData.warning) { showNotification(`AI 回應可能不完整: ${aiData.warning}`, 'warning', 7000); log(`n8n 報告結構警告: ${aiData.warning}`, 'warning'); }
+                    if (aiData.parseError) { showNotification(`AI 回應解析錯誤: ${aiData.parseError}`, 'error', 8000); log(`Webhook 報告解析錯誤: ${aiData.parseError}`, 'error'); if (aiData.rawOutput) console.error("LLM Raw Output (解析失敗):", aiData.rawOutput); }
+                    if (aiData.warning) { showNotification(`AI 回應可能不完整: ${aiData.warning}`, 'warning', 7000); log(`Webhook 報告結構警告: ${aiData.warning}`, 'warning'); }
                     if (aiData.claims || aiData.facts || aiData.laws) { populateFieldsFromAI(aiData); showNotification('AI 分析完成，已填入相關欄位！', 'success'); } else { showNotification('AI 回應成功，但未提取到可填入的資料', 'warning'); log('AI 成功回應，但缺少預期鍵值', 'warning'); populateFieldsFromAI(aiData); }
                 } catch (error) { console.error('AI Summarize Fetch Error:', error); log(`AI 統整請求失敗: ${error.message}`, 'error'); showNotification(`AI 統整失敗：${error.message || '未知網路或伺服器錯誤'}`, 'error', 8000); showError('caseProcess', `AI 統整失敗`); }
                 finally { if (aiButton) { aiButton.disabled = false; aiButton.innerHTML = originalButtonHTML; } }
@@ -1766,9 +1935,11 @@
                 tag.textContent = keyword;
                 tag.dataset.keyword = keyword;
                 const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button'; // Good practice
                 deleteBtn.className = 'keyword-delete';
-                deleteBtn.innerHTML = '×';
                 deleteBtn.title = '移除此關鍵字';
+                // UPDATED: Use Material Icon for delete
+                deleteBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
                 deleteBtn.addEventListener('click', deleteGeneralKeywordHandler);
                 tag.appendChild(deleteBtn);
                 keywordListDiv.appendChild(tag);
@@ -1818,9 +1989,11 @@
                     tag.textContent = selectedCourtText;
                     tag.dataset.court = selectedCourtValue; // Store the value
                     const deleteBtn = document.createElement('button');
+                    deleteBtn.type = 'button';
                     deleteBtn.className = 'keyword-delete';
-                    deleteBtn.innerHTML = '×';
                     deleteBtn.title = '移除此法院篩選';
+                    // UPDATED: Use Material Icon for delete
+                    deleteBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
                     deleteBtn.addEventListener('click', deleteCourtKeywordHandler);
                     tag.appendChild(deleteBtn);
                     courtKeywordList.appendChild(tag);
@@ -1832,7 +2005,7 @@
                 const tag = event.target.closest('.court-keyword-tag');
                 if (tag) {
                     const court = tag.dataset.court;
-                    const courtText = tag.textContent.replace('×', '').trim(); // Get text for logging
+                    const courtText = tag.textContent.replace('close', '').trim(); // Get text for logging (remove icon text)
                     tag.remove();
                     log(`移除法院關鍵字: ${courtText} (Value: ${court})`, 'ui');
                 }
@@ -1847,7 +2020,8 @@
             function resetAiSearchUI() {
                 const aiButton = document.getElementById('aiSearchBtn');
                 if (aiButton) {
-                    aiButton.innerHTML = '<i class="fas fa-search"></i> AI 搜尋';
+                    // UPDATED Icon
+                    aiButton.innerHTML = '<span class="material-symbols-outlined">search</span> AI 搜尋';
                     aiButton.disabled = false;
                 }
                 if (aiSearchInputArea) { aiSearchInputArea.style.display = 'none'; }
@@ -1883,13 +2057,15 @@
                 if (precedentRegex.test(currentText)) {
                     showNotification(`"${precedentId}" 已存在於欄位中`, 'info');
                     buttonElement.disabled = true;
-                    buttonElement.innerHTML = '✔ 已加入';
+                    // UPDATED 'Added' state icon
+                    buttonElement.innerHTML = '<span class="material-symbols-outlined">check</span> 已加入';
                     return;
                 }
                 precedentsTextarea.value += (currentText ? '\n' : '') + precedentId;
                 log(`已將 "${precedentId}" 加入相關判決欄位`, 'ui');
                 buttonElement.disabled = true;
-                buttonElement.innerHTML = '✔ 已加入';
+                // UPDATED 'Added' state icon
+                buttonElement.innerHTML = '<span class="material-symbols-outlined">check</span> 已加入';
                 precedentsTextarea.scrollTop = precedentsTextarea.scrollHeight;
             }
 
@@ -2067,13 +2243,15 @@
                         const addButton = document.createElement('button');
                         addButton.type = 'button';
                         addButton.className = 'btn btn-add-precedent';
-                        addButton.innerHTML = '<i class="fas fa-plus"></i> 加入';
+                        // UPDATED Icon
+                        addButton.innerHTML = '<span class="material-symbols-outlined">add</span> 加入';
                         addButton.title = `將此判決加入上方欄位`;
 
                         const precedentRegex = new RegExp(`(^|\\n)${item.id.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(\\s|$)`, 'm');
                         if (precedentRegex.test(addedPrecedents)) {
                             addButton.disabled = true;
-                            addButton.innerHTML = '✔ 已加入';
+                            // UPDATED Icon
+                            addButton.innerHTML = '<span class="material-symbols-outlined">check</span> 已加入';
                         } else {
                             addButton.addEventListener('click', () => addPrecedentToTextarea(addButton, item.id));
                         }
@@ -2133,7 +2311,8 @@
                         } else { log('未自動提取一般關鍵字，請手動輸入或選擇法院', 'ui'); }
                     } else { log('一般關鍵字已存在，跳過自動提取', 'ui'); }
 
-                    aiButton.innerHTML = '<i class="fas fa-paper-plane"></i> 送出搜尋';
+                    // UPDATED 'Ready' state icon
+                    aiButton.innerHTML = '<span class="material-symbols-outlined">send</span> 送出搜尋'; // 'paper-plane' -> 'send'
                     aiSearchState = 'keywords_ready';
                     log('AI 搜尋進入 "keywords_ready" 狀態，輸入區已顯示', 'ui');
                     return; // Wait for second click
@@ -2174,7 +2353,8 @@
 
                 let originalButtonHTML = aiButton.innerHTML;
                 aiButton.disabled = true;
-                aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 搜尋中...';
+                // UPDATED loading state icon
+                aiButton.innerHTML = '<span class="material-symbols-outlined spin-animation">hourglass_empty</span> 搜尋中...'; // Or 'sync'
                 showNotification('正在請求 AI 搜尋相關判決...', 'info');
 
                 try {
@@ -2236,7 +2416,8 @@
                 } finally {
                     if (aiButton) {
                         aiButton.disabled = false;
-                        aiButton.innerHTML = '<i class="fas fa-paper-plane"></i> 送出搜尋'; // Keep ready state button text
+                         // UPDATED 'Ready' state icon
+                        aiButton.innerHTML = '<span class="material-symbols-outlined">send</span> 送出搜尋'; // Keep ready state button text
                     }
                     log('AI 搜尋完成，按鈕已重設，結果列表/篩選器已(或嘗試)顯示', 'ui');
                 }
@@ -2252,7 +2433,7 @@
                 log('表單數據已收集完畢', 'data'); if (DEBUG_MODE) console.log("準備發送的數據:", JSON.stringify(formData, null, 2));
                 showLoading("正在生成書狀，請稍候...", 45); let secondsLeft = 45; const timerInterval = setInterval(() => { secondsLeft--; if (secondsLeft > 0) { estimatedTimeP.textContent = `預計剩餘： ${secondsLeft} 秒`; } else { estimatedTimeP.textContent = `仍在處理中，請耐心等候...`; clearInterval(timerInterval); } }, 1000);
                 fetch(generateWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Request-ID': `gen-${Date.now()}-${Math.random().toString(16).substring(2, 8)}` }, body: JSON.stringify(formData) })
-                    .then(async response => { clearInterval(timerInterval); log(`收到 n8n (生成) 回應，狀態: ${response.status}`, 'response'); if (!response.ok) { let errorBody = await response.text(); log(`伺服器錯誤回應內容: ${errorBody}`, 'error'); throw new Error(`伺服器錯誤: ${response.status} ${response.statusText}. ${errorBody || '無詳細錯誤訊息'}`); } return response.text(); })
+                    .then(async response => { clearInterval(timerInterval); log(`收到 Webhook (生成) 回應，狀態: ${response.status}`, 'response'); if (!response.ok) { let errorBody = await response.text(); log(`伺服器錯誤回應內容: ${errorBody}`, 'error'); throw new Error(`伺服器錯誤: ${response.status} ${response.statusText}. ${errorBody || '無詳細錯誤訊息'}`); } return response.text(); })
                     .then(text => { log("收到原始生成回應文本", 'debug'); if (DEBUG_MODE) console.log("Raw Response Text:", text); let data; try { data = JSON.parse(text); } catch (e) { log("生成回應不是有效的 JSON，將直接使用收到的文本", 'debug'); data = text; } return data; })
                     .then(data => { hideLoading(); log("收到最終生成回應數據", 'response'); if (DEBUG_MODE) console.log("Processed Response Data:", data); const finalOutput = processLegalDocumentText(data); log("最終書狀文本已處理完成", 'process'); if (DEBUG_MODE) console.log("Final Output for Display:", finalOutput); saveDocumentToLocalStorage(finalOutput); documentContent.textContent = finalOutput || "未能生成內容，請檢查回應。"; modal.style.display = 'block'; showNotification('訴狀已成功生成！', 'success'); setupButtons(); })
                     .catch(error => { clearInterval(timerInterval); hideLoading(); console.error('Form Submission/Generation Error:', error); log(`生成請求失敗: ${error.message}`, 'error'); showNotification(`生成書狀時發生錯誤：${error.message || '未知錯誤'}`, 'error', 8000); });
@@ -2265,7 +2446,17 @@
             if (copyBtn) { copyBtn.addEventListener('click', () => { const textToCopy = documentContent.textContent; if (!textToCopy) { showNotification('沒有內容可複製', 'warning'); return; } navigator.clipboard.writeText(textToCopy).then(() => { showNotification('書狀內容已複製到剪貼簿', 'success'); log('內容已複製', 'action'); }).catch(err => { showNotification('複製失敗，瀏覽器可能不支援或未授權', 'error'); log(`複製失敗: ${err.message}`, 'error'); }); }); }
             if (printBtn) { printBtn.addEventListener('click', () => { log('觸發列印', 'action'); window.print(); }); } // Simplified print call
             if (downloadBtn) { downloadBtn.addEventListener('click', () => { try { const text = documentContent.textContent; if (!text) { showNotification('沒有內容可下載', 'warning'); return; } const caseType = getCaseTypeValue() || '書狀'; const today = new Date().toISOString().slice(0, 10); const filename = `${caseType}_${today}.txt`; const blob = new Blob([text], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); showNotification(`已下載文件：${filename}`, 'success'); log(`書狀已下載為 ${filename}`, 'action'); } catch (e) { log(`下載失敗: ${e.message}`, 'error'); showNotification('下載文件時發生錯誤', 'error'); } }); }
-            if (emailBtn) { emailBtn.addEventListener('click', () => { const userEmail = document.getElementById('email').value; const docText = documentContent.textContent; if (!userEmail || !validateEmail(userEmail)) { showNotification('請先在主表單填寫有效的電子郵件地址才能寄送', 'warning'); showError('email', '若要寄送，請填寫有效的電子郵件'); return; } if (!docText) { showNotification('沒有訴狀內容可寄送', 'warning'); return; } log(`準備模擬發送郵件至 ${userEmail}`, 'action'); showNotification(`即將模擬發送書狀至：${userEmail}`, 'info'); emailBtn.disabled = true; emailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 寄送中...'; setTimeout(() => { emailBtn.disabled = false; emailBtn.innerHTML = '<i class="fas fa-envelope"></i> 寄送Email'; showNotification(`書狀已「模擬」發送至您的信箱：${userEmail}`, 'success'); log(`模擬郵件已發送至 ${userEmail}`, 'action'); }, 2500); }); }
+            if (emailBtn) { emailBtn.addEventListener('click', () => { const userEmail = document.getElementById('email').value; const docText = documentContent.textContent; if (!userEmail || !validateEmail(userEmail)) { showNotification('請先在主表單填寫有效的電子郵件地址才能寄送', 'warning'); showError('email', '若要寄送，請填寫有效的電子郵件'); return; } if (!docText) { showNotification('沒有訴狀內容可寄送', 'warning'); return; } log(`準備模擬發送郵件至 ${userEmail}`, 'action'); showNotification(`即將模擬發送書狀至：${userEmail}`, 'info'); emailBtn.disabled = true;
+                // UPDATED loading state icon
+                emailBtn.innerHTML = '<span class="material-symbols-outlined spin-animation">hourglass_empty</span> 寄送中...'; // Or 'sync'
+                setTimeout(() => {
+                    emailBtn.disabled = false;
+                     // UPDATED Icon
+                    emailBtn.innerHTML = '<span class="material-symbols-outlined">mail_outline</span> 寄送Email';
+                    showNotification(`書狀已「模擬」發送至您的信箱：${userEmail}`, 'success'); log(`模擬郵件已發送至 ${userEmail}`, 'action');
+                }, 2500);
+            });
+            }
 
             // --- Populate Court Select Dropdown (for Search Query) ---
             function populateCourtDropdowns() {
@@ -2295,7 +2486,8 @@
             populateCourtDropdowns(); // Populate the court filter dropdown for the *search query*
 
             if (aiSearchButtonContainer) {
-                const aiSearchButton = createButton('aiSearchBtn', 'AI 搜尋', 'search', 'btn-accent', triggerAiSearch, false, false);
+                // UPDATED Icon
+                const aiSearchButton = createButton('aiSearchBtn', 'AI 搜尋', 'search', 'btn-accent', triggerAiSearch, false, false); // 'search' is the same
                 aiSearchButtonContainer.appendChild(aiSearchButton);
                 log('AI 搜尋按鈕已添加到其容器中', 'init');
             } else { log('未找到 AI 搜尋按鈕容器 (aiSearchButtonContainer)', 'warning'); }
@@ -2314,9 +2506,9 @@
             if (lawsTextarea) { lawsTextarea.addEventListener('input', resetAiSearchUI); }
             if (factsTextarea) { factsTextarea.addEventListener('input', resetAiSearchUI); }
 
-            //document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'd') { debugPanel.classList.toggle('active'); log(`調試面板 ${debugPanel.classList.contains('active') ? '開啟' : '關閉'}`, 'ui'); e.preventDefault(); } });
-            //if (DEBUG_MODE) showNotification('按下 Alt+D 可顯示/隱藏調試面板', 'info', 7000);
-            //resetAiSearchUI(); // Initial reset
+            document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'd') { debugPanel.classList.toggle('active'); log(`調試面板 ${debugPanel.classList.contains('active') ? '開啟' : '關閉'}`, 'ui'); e.preventDefault(); } });
+            if (DEBUG_MODE) showNotification('按下 Alt+D 可顯示/隱藏調試面板', 'info', 7000);
+            resetAiSearchUI(); // Initial reset
 
             // --- Function to handle case type dropdown change ---
             function handleCaseTypeChange() { if (!caseTypeSelect || !caseTypeCustomInput) return; const customError = document.getElementById('caseTypeCustom-error'); const selectError = document.getElementById('caseType-error'); if (caseTypeSelect.value === 'custom') { caseTypeCustomInput.style.display = 'block'; selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } else { caseTypeCustomInput.style.display = 'none'; caseTypeCustomInput.value = ''; customError.style.display = 'none'; caseTypeCustomInput.classList.remove('error'); if (caseTypeSelect.value !== '') { selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } } }
