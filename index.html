@@ -2167,9 +2167,9 @@
             if (lawsTextarea) { lawsTextarea.addEventListener('input', resetAiSearchUI); }
             if (factsTextarea) { factsTextarea.addEventListener('input', resetAiSearchUI); }
 
-            document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'd') { debugPanel.classList.toggle('active'); log(`調試面板 ${debugPanel.classList.contains('active') ? '開啟' : '關閉'}`, 'ui'); e.preventDefault(); } });
-            if (DEBUG_MODE) showNotification('按下 Alt+D 可顯示/隱藏調試面板', 'info', 7000);
-            resetAiSearchUI(); // Initial reset
+            //document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'd') { debugPanel.classList.toggle('active'); log(`調試面板 ${debugPanel.classList.contains('active') ? '開啟' : '關閉'}`, 'ui'); e.preventDefault(); } });
+            //if (DEBUG_MODE) showNotification('按下 Alt+D 可顯示/隱藏調試面板', 'info', 7000);
+            //resetAiSearchUI(); // Initial reset
 
             // --- Function to handle case type dropdown change ---
             function handleCaseTypeChange() { if (!caseTypeSelect || !caseTypeCustomInput) return; const customError = document.getElementById('caseTypeCustom-error'); const selectError = document.getElementById('caseType-error'); if (caseTypeSelect.value === 'custom') { caseTypeCustomInput.style.display = 'block'; selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } else { caseTypeCustomInput.style.display = 'none'; caseTypeCustomInput.value = ''; customError.style.display = 'none'; caseTypeCustomInput.classList.remove('error'); if (caseTypeSelect.value !== '') { selectError.style.display = 'none'; caseTypeSelect.classList.remove('error'); } } }
